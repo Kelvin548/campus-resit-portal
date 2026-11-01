@@ -229,4 +229,44 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-01 | `app/Models/Exam.php` | Created | Lines 1–75 | Created Exam model with exam type constants, status constants, and relations to course, timetables, results. |
 | 2026-11-01 | `app/Models/Timetable.php` | Created | Lines 1–101 | Created Timetable model with double-booking clash checker scope `scopeConflicting()`, publication status helper, and relations. |
 | 2026-11-01 | `app/Models/Result.php` | Created | Lines 1–66 | Created Result model with decimal score casts, publication status, and relations to registration, exam, and enteredBy user. |
-| 2026-11-01 | `PP-kelvyn.md` | Modified | Lines 1–232 | Updated project tracker with database migration completion, model relationship documentation, progress updates, and audit log. |
+| 2026-11-01 | `database/seeders/DatabaseSeeder.php` | Modified | Lines 1–105 | Configured core seed data: 4 users (Admin, Chief Examiner, 2 Students) and 4 initial courses (CS101, CS204, CS305, CS410). |
+| 2026-11-01 | `PP-kelvyn.md` | Modified | Lines 1–272 | Added Partner Setup & Database Synchronization Guide and updated audit log. |
+
+---
+
+## 8. Partner Setup & Database Synchronization Guide
+
+*Share these instructions with Member 1, Member 2, and Member 3 so they have the exact same database and sample data running on their machines.*
+
+### How Team Members Get the Exact Same Database:
+1. **Pull the latest project files from GitHub:**
+   ```bash
+   git pull origin main
+   ```
+2. **Ensure MySQL is running in XAMPP** and create the database in phpMyAdmin:
+   - Database name: `campus_resit_portal`
+   - Make sure their local `.env` has:
+     ```env
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=campus_resit_portal
+     DB_USERNAME=root
+     DB_PASSWORD=
+     ```
+3. **Run the migrations and seed default data:**
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+
+### Default Seeded Test Accounts (Password for all: `password123`):
+- **Administrator:** `admin@campus.edu` (Role: `admin`)
+- **Chief Examiner:** `examiner@campus.edu` (Role: `chief_examiner`)
+- **Student 1:** `student1@campus.edu` (Student ID: `STU-2026-001`, Role: `student`)
+- **Student 2:** `student2@campus.edu` (Student ID: `STU-2026-002`, Role: `student`)
+
+### Default Seeded Courses:
+- **CS101:** Introduction to Computer Science (Level 100, Fee: GH₵ 150.00)
+- **CS204:** Data Structures and Algorithms (Level 200, Fee: GH₵ 180.00)
+- **CS305:** Database Management Systems (Level 300, Fee: GH₵ 200.00)
+- **CS410:** Software Engineering & Cloud Architecture (Level 400, Fee: GH₵ 250.00)
