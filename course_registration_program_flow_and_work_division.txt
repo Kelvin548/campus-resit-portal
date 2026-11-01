@@ -1,0 +1,121 @@
+COURSE REGISTRATION AND EXAMINATION MANAGEMENT SYSTEM
+
+1.  STUDENT PROGRAM FLOW
+
+2.  Student opens the website.
+
+3.  Student registers for an account or logs in.
+
+4.  Student views the available courses and their registration fees.
+
+5.  Student selects the course they want to register for.
+
+6.  System checks whether the registration period is open and the
+    deadline has not passed.
+
+7.  Student completes and submits the registration form.
+
+8.  System creates the registration and records its initial status.
+
+9.  Student proceeds to payment.
+
+10. System initiates the Mobile Money payment through the test payment
+    gateway.
+
+11. Student receives a Mobile Money authorisation prompt and approves or
+    declines it.
+
+12. Payment gateway sends the payment result to the system.
+
+13. System verifies the transaction and updates the payment status.
+
+14. If payment fails or remains pending, the student can check the
+    status and retry where permitted.
+
+15. If payment succeeds, the registration is marked as paid and awaiting
+    the Chief Examiner’s action.
+
+16. Student waits for the Chief Examiner to process the registration and
+    publish the examination timetable.
+
+17. System sends the student an email notification when the relevant
+    decision or timetable is published.
+
+18. Student logs in to view the registration status and, when available,
+    the examination date, time and venue.
+
+19. Student views or downloads the published timetable.
+
+20. CHIEF EXAMINER PROGRAM FLOW
+
+21. Chief Examiner opens the website and logs in.
+
+22. System verifies the Chief Examiner’s account and role.
+
+23. Chief Examiner opens the dashboard.
+
+24. Chief Examiner views registrations and filters them by course or
+    registration period.
+
+25. Chief Examiner reviews the list of successfully paid registrations.
+
+26. If the process requires individual approval, Chief Examiner accepts
+    or rejects each registration.
+
+27. Chief Examiner prepares the examination timetable.
+
+28. Chief Examiner assigns the relevant examination date, time and venue
+    to each course or examination.
+
+29. Chief Examiner reviews and publishes the timetable.
+
+30. System makes the published timetable available to eligible students.
+
+31. System sends email notifications to affected students with the
+    relevant confirmation and examination details.
+
+32. Chief Examiner can view the published timetable and the
+    registrations associated with it.
+
+33. DIVISION OF WORK AMONG FOUR MEMBERS
+
+MEMBER 1: AUTHENTICATION, USERS AND COURSE MANAGEMENT - Build student,
+administrator and Chief Examiner login and role-based access. - Manage
+student profiles and user accounts. - Create, update and manage
+courses. - Set course registration fees. - Set registration opening
+dates and deadlines. - Prevent registration after the deadline. - Build
+the shared website layout and navigation.
+
+MEMBER 2: STUDENT REGISTRATION AND STUDENT PORTAL - Display available
+courses to students. - Allow students to view course details and fees. -
+Build the course registration form. - Submit and store student
+registrations. - Prevent duplicate registrations where applicable. -
+Build the student dashboard. - Display registration and payment
+statuses. - Display published examination timetables and examination
+details.
+
+MEMBER 3: MOBILE MONEY PAYMENT INTEGRATION - Integrate the payment
+gateway’s test environment. - Initiate Mobile Money payment requests. -
+Handle payment callbacks or webhooks. - Verify transactions with the
+payment gateway. - Update payment statuses as pending, successful or
+failed. - Prevent the same transaction from being processed more than
+once. - Provide payment history and receipts. - Coordinate with Member 2
+so payments are linked to the correct student registration.
+
+MEMBER 4: CHIEF EXAMINER, TIMETABLE AND EMAIL NOTIFICATIONS - Build the
+Chief Examiner dashboard. - Display paid student registrations. -
+Provide registration filtering and review. - Implement acceptance or
+rejection if individual approval is required. - Create and manage
+examination timetables. - Assign examination dates, times and venues. -
+Publish the timetable. - Send email notifications to students with
+confirmation and examination details.
+
+TEAM INTEGRATION - All four members work in one shared project
+repository. - Each member develops their assigned module on a separate
+Git branch. - Members commit and push their work, then create pull
+requests for review and merging. - Agree on the database design, naming
+conventions and shared interfaces before development. - Coordinate
+changes to shared files such as routes, migrations, shared models and
+layouts. - Each member uses their own local environment configuration;
+do not commit the .env file. - Test the integrated system before merging
+the completed project into the main branch.

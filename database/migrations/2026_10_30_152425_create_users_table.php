@@ -15,6 +15,8 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->enum('role', ['student', 'chief_examiner', 'admin'])->default('student');
             $table->string('student_id_number')->unique()->nullable();
+            $table->string('phone_number')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
