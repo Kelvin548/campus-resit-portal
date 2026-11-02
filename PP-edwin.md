@@ -34,6 +34,7 @@
 | **DEC-012** | Role Assignment: Member 2 | Assigned to Edwin: Student Registration & Student Portal | 2026-10-31 | Focus on course display, registration forms, submission handling, duplicate checks, student dashboard, and timetable views. |
 | **DEC-013** | Database Migration & Test Seeder Setup | Executed `migrate:fresh --seed` against MySQL `campus_resit_portal` | 2026-11-02 | Seeded 7 core tables: users, courses, registrations, payments, exams, timetables, results with default test accounts. |
 | **DEC-014** | Member 2 Student Portal Implementation | Built StudentPortalController, AuthController, Tailwind layouts, registration forms, duplicate prevention, payment simulation, and exam slip | 2026-11-02 | Fulfills Member 2 module specifications completely and verified via automated Feature tests. |
+| **DEC-015** | Session Driver Configuration | Configured `SESSION_DRIVER=file` in local `.env` | 2026-11-02 | Uses file-based sessions in local storage to prevent session table missing errors. |
 
 ### B. Decisions to Make Later (Pending / Under Review)
 | ID | Decision Needed | Options Available | Target Date | Status |
@@ -163,3 +164,4 @@
 | 2026-11-02 | File Updated | `routes/web.php` | Lines 1–48 | Configured auth routes and protected student portal route group with clean name aliases. |
 | 2026-11-02 | File Created | `tests/Feature/StudentPortalTest.php` | Lines 1–135 | Automated Feature test suite verifying login, dashboard, course browsing, duplicate prevention, MoMo payments, and exam slip. |
 | 2026-11-02 | Git Push | GitHub Remote (`origin/edwin`) | Commit `d3adf12` | Successfully staged, committed, and pushed all Member 2 modules and tracking files to GitHub remote branch `edwin`. |
+| 2026-11-02 | Environment Updated | `.env` | Line 30 | Updated `SESSION_DRIVER=file` for local session persistence and cleared config cache. |
