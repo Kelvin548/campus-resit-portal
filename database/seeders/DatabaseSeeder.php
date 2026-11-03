@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
                 'full_name' => 'Kelvyn Kofi Doe',
                 'password' => Hash::make('password123'),
                 'role' => 'student',
-                'student_id_number' => 'STU-2026-001',
+                'student_id_number' => '2026000001',
                 'phone_number' => '+233241234567',
             ]
         );
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
                 'full_name' => 'Akosua Serwaa',
                 'password' => Hash::make('password123'),
                 'role' => 'student',
-                'student_id_number' => 'STU-2026-002',
+                'student_id_number' => '2026000002',
                 'phone_number' => '+233249876543',
             ]
         );

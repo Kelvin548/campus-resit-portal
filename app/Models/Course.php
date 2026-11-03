@@ -45,28 +45,6 @@ class Course extends Model
     }
 
     /**
-     * Helper to verify if course registration window is currently open.
-     */
-    public function isRegistrationOpen(): bool
-    {
-        if (! $this->is_active) {
-            return false;
-        }
-
-        $now = now();
-
-        if ($this->registration_start && $now->lt($this->registration_start)) {
-            return false;
-        }
-
-        if ($this->registration_deadline && $now->gt($this->registration_deadline)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Registrations associated with this course.
      */
     public function registrations(): HasMany
