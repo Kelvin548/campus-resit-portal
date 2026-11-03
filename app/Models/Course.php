@@ -49,21 +49,30 @@ class Course extends Model
      */
     public function isRegistrationOpen(): bool
     {
-        if (! $this->is_active) {
+        if (! $this->is_active || ! $this->registration_start || ! $this->registration_deadline) {
             return false;
         }
 
         $now = now();
 
-        if ($this->registration_start && $now->lt($this->registration_start)) {
-            return false;
-        }
+        return $now->greaterThanOrEqualTo($this->registration_start)
+            && $now->lessThan($this->registration_deadline);
+    }
 
-        if ($this->registration_deadline && $now->gt($this->registration_deadline)) {
-            return false;
-        }
+    /**
+     * Whether at least one active supplementary course currently accepts registration.
+     */
+    public static function hasOpenRegistrationWindow(): bool
+    {
+        $now = now();
 
-        return true;
+        return self::query()
+            ->where('is_active', true)
+            ->whereNotNull('registration_start')
+            ->where('registration_start', '<=', $now)
+            ->whereNotNull('registration_deadline')
+            ->where('registration_deadline', '>', $now)
+            ->exists();
     }
 
     /**

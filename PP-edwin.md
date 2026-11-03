@@ -43,7 +43,7 @@
 | **DEC-007** | Chief Examiner Approval Mode | Option A: Auto-approve after successful payment.<br>Option B: Manual approval/rejection required per registration. | 2026-11-02 | Pending Discussion |
 | **DEC-008** | Registration Limit per Student | Single course per submission vs. multi-course cart/batch registration | 2026-11-03 | Pending Discussion |
 | **DEC-009** | Timetable Conflict & Venue Capacity Handling | Automated clash detection vs. manual assignment by Chief Examiner | 2026-11-04 | Pending Discussion |
-| **DEC-010** | Email Delivery Service | Mailpit/Log (Local dev), Mailtrap, or live SMTP provider | 2026-11-04 | Pending Discussion |
+| **DEC-010** | Email Delivery Service | Gmail SMTP with dedicated project account for development; institution-approved SMTP/transactional provider for production | 2026-11-04 | Development choice agreed; production provider pending |
 | **DEC-011** | Frontend UI Stack | Blade with Tailwind CSS vs. Blade with Bootstrap 5 | 2026-11-02 | Pending Discussion |
 
 ---

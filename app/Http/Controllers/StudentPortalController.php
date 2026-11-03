@@ -31,8 +31,11 @@ class StudentPortalController extends Controller
 
         // Calculate key metrics
         $totalRegistered = $registrations->count();
+        
         $pendingPaymentCount = $registrations->where('status', Registration::STATUS_PENDING_PAYMENT)->count();
+        
         $paidCount = $registrations->whereIn('status', [Registration::STATUS_PAID, Registration::STATUS_APPROVED])->count();
+        
         $approvedCount = $registrations->where('status', Registration::STATUS_APPROVED)->count();
 
         // Fetch published timetables matching courses registered by this student

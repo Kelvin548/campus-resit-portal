@@ -18,7 +18,7 @@
         <!-- Header -->
         <div class="border-b border-slate-100 pb-5 mb-6">
             <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-2">
-                Resit Application Form
+               Resit and Supplementary Examination Application
             </span>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Register for {{ $course->course_code }}</h1>
             <p class="text-sm text-slate-500 mt-1">{{ $course->course_name }} • Level {{ $course->level }}</p>
