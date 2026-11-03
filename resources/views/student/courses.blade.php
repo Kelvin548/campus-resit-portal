@@ -55,7 +55,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($courses as $course)
                 @php
-                    $isOpen = $course->isRegistrationOpen();
+                    $isOpen = $studentRegistrationOpen && $course->is_active;
                     $isRegistered = in_array($course->id, $registeredCourseIds);
                 @endphp
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-brand-300 transition overflow-hidden">
@@ -76,7 +76,7 @@
                                 </span>
                             @elseif(!$isOpen)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                                    Closed
+                                    Registration closed
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -110,15 +110,15 @@
                             </div>
                         </div>
 
-                        <!-- Deadline Notice -->
+                        <!-- Global registration period notice -->
                         <div class="mt-4 text-xs text-slate-500 flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            @if($course->registration_deadline)
-                                <span>Deadline: <strong class="text-slate-800">{{ $course->registration_deadline->format('M d, Y g:i A') }} Ghana time</strong></span>
+                            @if($registrationClosesAt)
+                                <span>Registration closes: <strong class="text-slate-800">{{ $registrationClosesAt->format('M d, Y g:i A') }} Ghana time</strong></span>
                             @else
-                                <span>No deadline specified</span>
+                                <span>Registration dates have not been scheduled</span>
                             @endif
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                         @elseif($isOpen)
                             <a href="{{ route('student.registerCourseForm', $course->id) }}" 
                                class="w-full py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                                <span>Register for Resit (GHS {{ number_format($course->registration_fee, 2) }})</span>
+                                <span>Register for Supplementary Exam (GHS {{ number_format($course->registration_fee, 2) }})</span>
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                 </svg>

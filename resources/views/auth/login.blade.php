@@ -13,19 +13,35 @@
             <p class="text-sm text-slate-500 mt-1">Course Registration & Resit Examination Management</p>
         </div>
 
-        @if ($studentRegistrationOpen)
+        @if ($studentRegistrationPhase === 'registration')
             <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
                 <p class="font-semibold">Supplementary registration is open</p>
-                <p class="mt-1 text-emerald-800">Students can create an account and register for courses while an active course registration window is open.</p>
+                <p class="mt-1 text-emerald-800">Create your account or register for supplementary courses before the registration period closes.</p>
+            </div>
+        @elseif ($studentRegistrationPhase === 'not_started')
+            <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+                <p class="font-semibold">Supplementary registration has not started</p>
+                <p class="mt-1 text-amber-800">Student access will open when the next supplementary cycle begins.</p>
+            </div>
+        @elseif ($studentRegistrationPhase === 'exam_access')
+            <div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900" role="status">
+                <p class="font-semibold">Supplementary registration is closed</p>
+                <p class="mt-1 text-blue-800">Sign in to view your examination information, including your timetable.</p>
+            </div>
+        @elseif ($studentRegistrationPhase === 'not_scheduled')
+            <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+                <p class="font-semibold">The next supplementary cycle has not been scheduled</p>
+                <p class="mt-1 text-amber-800">Please check again when the registration dates are announced.</p>
             </div>
         @else
             <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
-                <p class="font-semibold">Student registration is currently closed</p>
-                <p class="mt-1 text-amber-800">Account creation and supplementary course registration will be available during the next registration period.</p>
+                <p class="font-semibold">The supplementary examination cycle has ended</p>
+                <p class="mt-1 text-amber-800">Student access is closed until the next cycle begins.</p>
             </div>
         @endif
 
         <!-- Login Form -->
+        @if ($studentLoginAllowed)
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
@@ -69,6 +85,7 @@
                 <button type="button" onclick="fillCreds('admin@campus.edu', 'password123')" class="p-2 rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 text-left transition font-medium">🛡️ Administrator</button>
             </div>
         </div>
+        @endif
 
         @if ($studentRegistrationOpen)
             <p class="mt-6 text-center text-xs text-slate-500">
@@ -79,9 +96,11 @@
     </div>
 </div>
 <script>
-    function fillCreds(identifier, password) {
-        document.getElementById('login_identifier').value = identifier;
-        document.getElementById('password').value = password;
-    }
+    @if ($studentLoginAllowed)
+        function fillCreds(identifier, password) {
+            document.getElementById('login_identifier').value = identifier;
+            document.getElementById('password').value = password;
+        }
+    @endif
 </script>
 @endsection

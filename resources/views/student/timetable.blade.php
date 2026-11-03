@@ -91,10 +91,14 @@
                                             ✓ Registered
                                         </span>
                                     @else
-                                        <a href="{{ route('student.registerCourseForm', $tt->course_id) }}" 
-                                           class="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline">
-                                            Register for Course
-                                        </a>
+                                        @if($studentRegistrationOpen)
+                                            <a href="{{ route('student.registerCourseForm', $tt->course_id) }}"
+                                               class="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline">
+                                                Register for Course
+                                            </a>
+                                        @else
+                                            <span class="text-xs text-slate-500">Not registered</span>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>

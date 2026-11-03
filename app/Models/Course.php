@@ -45,37 +45,6 @@ class Course extends Model
     }
 
     /**
-     * Helper to verify if course registration window is currently open.
-     */
-    public function isRegistrationOpen(): bool
-    {
-        if (! $this->is_active || ! $this->registration_start || ! $this->registration_deadline) {
-            return false;
-        }
-
-        $now = now();
-
-        return $now->greaterThanOrEqualTo($this->registration_start)
-            && $now->lessThan($this->registration_deadline);
-    }
-
-    /**
-     * Whether at least one active supplementary course currently accepts registration.
-     */
-    public static function hasOpenRegistrationWindow(): bool
-    {
-        $now = now();
-
-        return self::query()
-            ->where('is_active', true)
-            ->whereNotNull('registration_start')
-            ->where('registration_start', '<=', $now)
-            ->whereNotNull('registration_deadline')
-            ->where('registration_deadline', '>', $now)
-            ->exists();
-    }
-
-    /**
      * Registrations associated with this course.
      */
     public function registrations(): HasMany

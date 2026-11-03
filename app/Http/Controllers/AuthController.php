@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Course;
 use App\Models\StaffInvitation;
+use App\Models\SupplementaryCycle;
 use App\Mail\StaffInvitationMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,14 +21,34 @@ class AuthController extends Controller
     /**
      * Show the login form.
      */
-    public function showLogin(): View|RedirectResponse
+    public function showLogin(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return $this->redirectBasedOnRole(Auth::user());
+            $user = Auth::user();
+
+            if ($user->isStudent() && SupplementaryCycle::studentPortalIsOpenNow()) {
+                return redirect()->route('student.dashboard');
+            }
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isChiefExaminer()) {
+                return redirect()->route('chief-examiner.dashboard');
+            }
+
+            if ($user->isStudent()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
         }
 
         return view('auth.login', [
-            'studentRegistrationOpen' => Course::hasOpenRegistrationWindow(),
+            'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
+            'studentLoginAllowed' => SupplementaryCycle::studentPortalIsOpenNow(),
+            'studentRegistrationPhase' => SupplementaryCycle::currentPhase(),
         ]);
     }
 
@@ -37,6 +57,12 @@ class AuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
+        if (! SupplementaryCycle::studentPortalIsOpenNow()) {
+            return redirect()->route('login')->withErrors([
+                'login_identifier' => 'Student access is unavailable outside an active supplementary examination cycle.',
+            ]);
+        }
+
         $validated = $request->validate([
             'login_identifier' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
@@ -300,8 +326,8 @@ class AuthController extends Controller
             return $this->redirectBasedOnRole(Auth::user());
         }
 
-        if (! Course::hasOpenRegistrationWindow()) {
-            return redirect()->route('login');
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return redirect()->route('login')->with('cycle_notice', true);
         }
 
         return view('auth.register');
@@ -312,8 +338,8 @@ class AuthController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
-        if (! Course::hasOpenRegistrationWindow()) {
-            return redirect()->route('login');
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return redirect()->route('login')->with('cycle_notice', true);
         }
 
         $validated = $request->validate([
@@ -324,8 +350,8 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
-        if (! Course::hasOpenRegistrationWindow()) {
-            return redirect()->route('login');
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return redirect()->route('login')->with('cycle_notice', true);
         }
 
         $user = User::create([

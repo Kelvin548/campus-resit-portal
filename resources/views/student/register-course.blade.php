@@ -77,7 +77,7 @@
                     </svg>
                     Registration Policy & Duplicate Prevention
                 </div>
-                <p>Once submitted, this course registration will be marked as <strong class="font-medium text-amber-900">Pending Payment</strong>. You must complete Mobile Money authorization before the registration deadline to secure examination eligibility.</p>
+                <p>Once submitted, this course registration will be marked as <strong class="font-medium text-amber-900">Pending Payment</strong>. Complete Mobile Money authorization before the global supplementary registration period closes{{ $registrationClosesAt ? ' at ' . $registrationClosesAt->format('M d, Y g:i A') . ' Ghana time' : '' }} to secure examination eligibility.</p>
             </div>
 
             <!-- Submit Buttons -->

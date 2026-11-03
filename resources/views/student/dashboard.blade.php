@@ -18,6 +18,7 @@
         </div>
 
         <div class="flex items-center gap-3">
+            @if($studentRegistrationOpen)
             <a href="{{ route('student.courses') }}" 
                class="px-4 py-2.5 rounded-xl bg-white text-brand-900 font-semibold text-sm hover:bg-brand-50 shadow-sm transition flex items-center gap-2">
                 <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,6 +26,7 @@
                 </svg>
                 <span>Register New Course</span>
             </a>
+            @endif
             <a href="{{ route('student.timetable') }}" 
                class="px-4 py-2.5 rounded-xl bg-brand-800/80 hover:bg-brand-800 text-white font-medium text-sm border border-brand-600 transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +120,7 @@
                                 GHS {{ number_format($reg->course->registration_fee, 2) }}
                             </td>
                             <td class="py-4 px-4 whitespace-nowrap">
-                                @if($reg->status === 'pending_payment')
+                                @if($reg->status === 'pending_payment' && $studentRegistrationOpen)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                         Pending Payment
@@ -158,6 +160,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                                         </svg>
                                     </button>
+                                @elseif($reg->status === 'pending_payment')
+                                    <span class="text-xs text-slate-500">Payment period closed</span>
                                 @elseif($reg->status === 'approved' || $reg->status === 'paid')
                                     <a href="{{ route('student.examSlip', $reg->id) }}" 
                                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition">
@@ -224,6 +228,7 @@
 
 </div>
 
+@if($studentRegistrationOpen)
 <!-- Mobile Money Payment Modal -->
 <div id="payModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
@@ -284,4 +289,5 @@
         document.getElementById('payModal').classList.add('hidden');
     }
 </script>
+@endif
 @endsection

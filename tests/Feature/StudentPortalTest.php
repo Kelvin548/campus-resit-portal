@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\Registration;
+use App\Models\SupplementaryCycle;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -16,6 +17,14 @@ class StudentPortalTest extends TestCase
     {
         parent::setUp();
         $this->seed();
+
+        SupplementaryCycle::create([
+            'name' => 'Student Portal Test Cycle',
+            'registration_starts_at' => now()->subDay(),
+            'registration_ends_at' => now()->addDay(),
+            'student_access_ends_at' => now()->addMonth(),
+            'is_current' => true,
+        ]);
     }
 
     public function test_login_page_renders_successfully(): void
@@ -30,7 +39,7 @@ class StudentPortalTest extends TestCase
         $student = User::where('email', 'student1@campus.edu')->first();
 
         $response = $this->post('/login', [
-            'email' => 'student1@campus.edu',
+            'login_identifier' => 'student1@campus.edu',
             'password' => 'password123',
         ]);
 

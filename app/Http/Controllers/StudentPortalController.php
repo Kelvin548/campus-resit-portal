@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Registration;
+use App\Models\SupplementaryCycle;
 use App\Models\Timetable;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -49,6 +50,7 @@ class StudentPortalController extends Controller
 
         return view('student.dashboard', [
             'student' => $user,
+            'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
             'registrations' => $registrations,
             'totalRegistered' => $totalRegistered,
             'pendingPaymentCount' => $pendingPaymentCount,
@@ -91,6 +93,8 @@ class StudentPortalController extends Controller
         return view('student.courses', [
             'courses' => $courses,
             'registeredCourseIds' => $registeredCourseIds,
+            'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
+            'registrationClosesAt' => SupplementaryCycle::current()?->registration_ends_at,
             'selectedLevel' => $request->input('level'),
             'search' => $request->input('search'),
         ]);
@@ -105,9 +109,14 @@ class StudentPortalController extends Controller
         $user = Auth::user();
 
         // Verify if registration is currently open
-        if (! $course->isRegistrationOpen()) {
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
             return redirect()->route('student.courses')
-                ->with('error', "Registration for {$course->course_code} is currently closed or deadline has passed.");
+                ->with('error', 'The supplementary registration period is closed.');
+        }
+
+        if (! $course->is_active) {
+            return redirect()->route('student.courses')
+                ->with('error', 'This course is not currently offered for supplementary registration.');
         }
 
         // Duplicate check
@@ -123,6 +132,7 @@ class StudentPortalController extends Controller
         return view('student.register-course', [
             'course' => $course,
             'student' => $user,
+            'registrationClosesAt' => SupplementaryCycle::current()?->registration_ends_at,
         ]);
     }
 
@@ -134,6 +144,10 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return back()->with('error', 'The supplementary registration period is closed.');
+        }
+
         $validated = $request->validate([
             'course_id' => ['required', 'exists:courses,id'],
             'semester' => ['required', 'string', 'max:50'],
@@ -143,9 +157,13 @@ class StudentPortalController extends Controller
 
         $course = Course::findOrFail($validated['course_id']);
 
-        // Check if registration period is valid
-        if (! $course->isRegistrationOpen()) {
-            return back()->with('error', 'Registration window for this course is closed or the deadline has expired.');
+        // Recheck the global registration period immediately before creating the registration.
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return back()->with('error', 'The supplementary registration period is closed.');
+        }
+
+        if (! $course->is_active) {
+            return back()->with('error', 'This course is not currently offered for supplementary registration.');
         }
 
         // Check for duplicate registration
@@ -181,8 +199,16 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        $registeredCourseIds = Registration::where('user_id', $user->id)
+            ->pluck('course_id')
+            ->toArray();
+
         $query = Timetable::with(['course', 'publishedBy'])
             ->where('status', Timetable::STATUS_PUBLISHED);
+
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            $query->whereIn('course_id', $registeredCourseIds);
+        }
 
         if ($request->filled('search')) {
             $search = '%' . $request->input('search') . '%';
@@ -196,13 +222,10 @@ class StudentPortalController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        $registeredCourseIds = Registration::where('user_id', $user->id)
-            ->pluck('course_id')
-            ->toArray();
-
         return view('student.timetable', [
             'timetables' => $timetables,
             'registeredCourseIds' => $registeredCourseIds,
+            'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
             'search' => $request->input('search'),
         ]);
     }
@@ -242,6 +265,10 @@ class StudentPortalController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return back()->with('error', 'Payment submissions are closed for this supplementary cycle.');
+        }
 
         if ($registration->user_id !== $user->id) {
             abort(403, 'Unauthorized access to this registration.');
