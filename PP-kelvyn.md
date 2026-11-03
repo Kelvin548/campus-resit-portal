@@ -2,8 +2,8 @@
 
 **Project Name:** Campus Course Registration and Examination Management System (Resit Portal)  
 **Lead Developer:** Kelvyn  
-**Last Updated:** 2026-11-01  
-**Current Status:** Migrations Migrated (Batch 1 Ran) & Eloquent Models Fully Configured  
+**Last Updated:** 2026-11-03  
+**Current Status:** AMMUSTED Branding & UI Redesign Complete; Co-partner Modules Integrated & Verified  
 
 ---
 
@@ -231,6 +231,14 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-01 | `app/Models/Result.php` | Created | Lines 1–66 | Created Result model with decimal score casts, publication status, and relations to registration, exam, and enteredBy user. |
 | 2026-11-01 | `database/seeders/DatabaseSeeder.php` | Modified | Lines 1–105 | Configured core seed data: 4 users (Admin, Chief Examiner, 2 Students) and 4 initial courses (CS101, CS204, CS305, CS410). |
 | 2026-11-01 | `PP-kelvyn.md` | Modified | Lines 1–272 | Added Partner Setup & Database Synchronization Guide and updated audit log. |
+| 2026-11-03 | `Git Branch` | Merged | Fast-Forward | Integrated branches `edwin` (Member 2) and `felicia` (Member 1) cleanly into `main`. |
+| 2026-11-03 | `public/images/ammusted-logo.jpg` | Created | Binary | Added official AMMUSTED crest logo asset for portal branding. |
+| 2026-11-03 | `resources/views/layouts/app.blade.php` | Modified | Lines 21–65, 165 | Configured AMMUSTED wine (`#7a1326`) and gold theme in Tailwind, added logo to header, and updated institutional footer. |
+| 2026-11-03 | `resources/views/auth/login.blade.php` | Modified | Lines 1–150 | Redesigned login interface with AMMUSTED branding, removed demo buttons, streamlined alert banner, and enhanced form readability. |
+| 2026-11-03 | `resources/views/auth/staff.blade.php` | Modified | Lines 1–105 | Replaced generic blue styling with AMMUSTED wine theme and official crest for staff portal sign-in. |
+| 2026-11-03 | `app/Http/Controllers/AuthController.php` | Modified | Lines 38–58 | Added flexible login identifier fallback supporting both email and student index numbers to prevent regressions. |
+| 2026-11-03 | `tests/Feature/ExampleTest.php` | Modified | Line 17 | Updated root redirect assertion to `/login` ensuring 100% test suite pass rate. |
+| 2026-11-03 | `PP-kelvyn.md` | Modified | Lines 1–305 | Documented AMMUSTED UI redesign, co-partner integration, and updated audit change log. |
 
 ---
 

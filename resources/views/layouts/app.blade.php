@@ -20,13 +20,32 @@
                     },
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            50: '#fdf3f4',
+                            100: '#fbe6e9',
+                            200: '#f7d0d7',
+                            300: '#f0abb8',
+                            400: '#e57b8e',
+                            500: '#a31d36',
+                            600: '#7a1326', // Official AMMUSTED deep wine
+                            700: '#640f1f',
+                            800: '#520c19',
+                            900: '#440a15',
+                        },
+                        wine: {
+                            DEFAULT: '#7a1326',
+                            50: '#fdf3f4',
+                            100: '#fbe6e9',
+                            600: '#7a1326',
+                            700: '#640f1f',
+                            800: '#520c19',
+                            900: '#440a15',
+                        },
+                        gold: {
+                            DEFAULT: '#d4af37',
+                            50: '#fefdf7',
+                            100: '#fdf9e6',
+                            500: '#d4af37',
+                            600: '#b89222',
                         }
                     }
                 }
@@ -42,12 +61,11 @@
             <div class="flex justify-between h-16">
                 <!-- Left: Logo & Links -->
                 <div class="flex">
-                    <div class="flex-shrink-0 flex items-center gap-2">
-                        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
-                            CR
-                        </div>
-                        <a href="{{ route('student.dashboard') }}" class="font-bold text-lg text-slate-900 tracking-tight">
-                            Campus <span class="text-brand-600">Resit</span> Portal
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <img src="{{ asset('images/ammusted-logo.jpg') }}" alt="AMMUSTED Logo" class="h-11 w-auto object-contain">
+                        <a href="{{ auth()->check() ? route('student.dashboard') : route('login') }}" class="flex flex-col">
+                            <span class="font-extrabold text-base sm:text-lg text-brand-600 leading-tight tracking-tight uppercase">AMMUSTED</span>
+                            <span class="text-xs text-slate-500 font-medium hidden sm:inline">Campus Resit & Supplementary Portal</span>
                         </a>
                     </div>
                     @auth
@@ -144,7 +162,7 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; {{ date('Y') }} Campus Resit & Examination Portal. Built for Academic Administration.</p>
+            <p>&copy; {{ date('Y') }} Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development (AMMUSTED). Campus Resit & Supplementary Examination Portal.</p>
         </div>
     </footer>
 
