@@ -22,12 +22,14 @@
 - **API scope**: The older roadmap mentions `/api/auth/*` and `/api/courses/*`, but the current application uses Blade pages and `routes/web.php`, and no API routes are present. Do not assume REST APIs are required until the members confirm a specific consumer and contract. (Needs team confirmation)
 - **Course-management ownership overlap**: The role decision assigns supplementary course and fee management to the Chief Examiner, while the original Member 1 division assigns Course CRUD implementation to Member 1. Felicia and Member 4 must agree who implements the screens/actions; avoid duplicate implementations. (Open coordination decision)
 - **Shared database updates**: After pulling the branch containing new migrations, each member should run `php artisan migrate` against their own local database. Seed only when that member needs sample data; do not use `migrate:fresh --seed` on a database that must retain data. Felicia reports that she has run the project migrations locally. (Confirmed 2026-11-03)
+- **Initial cycle schedule**: Seed “November 2026 Supplementary Cycle” with registration opening 2026-11-06 15:30, registration closing 2026-11-10 15:35 (exclusive), and student access closing 2026-11-12 15:40, all Ghana time (`Africa/Accra`). The name is derived from the dates. Do not seed a demo cycle until this schedule has elapsed. (Confirmed 2026-11-03)
 
 ## Work Completed
 - Reviewed current authentication, role, route, and registration-deadline implementation. (2026-11-03)
 - Added front-end-only staff access and Administrator/Chief Examiner dashboard previews; no authentication or database wiring was added. (2026-11-03)
 - Added a front-end invitation acceptance/account-setup flow with a blurred staff-page backdrop, plus revised staff and dashboard copy to use production-style wording. These screens remain unconnected prototypes. (2026-11-03)
 - Added migrations for role-bound, expiring staff invitations and global supplementary-cycle dates. Felicia confirms she has run the project database migrations locally; this is recorded from her confirmation, not a separate database inspection. (2026-11-03)
+- Added the initial November 2026 supplementary-cycle dates to `DatabaseSeeder`; it creates the schedule only if no current cycle exists, so rerunning the seeder will not replace a configured current cycle. A demo cycle is intentionally deferred. (2026-11-03)
 - Added reusable role-check middleware and role-protected student, Administrator, and Chief Examiner routes. The staff dashboard pages are still previews. (2026-11-03)
 - Restricted student sign-in to the `student` role; student sign-in now accepts either email or an exactly 10-digit positive index number. Registration validates the same index format, and demo student records use numeric 10-digit indexes. (2026-11-03)
 - Reviewed current route and record ownership checks: student pages require the student role and student-owned registration/payment records are checked; Administrator invitation actions require the Administrator role. First-Administrator bootstrap remains undecided. (2026-11-03)
@@ -47,7 +49,7 @@
 ## Open Items / To‑Do
 - Confirm and review role protection for all actions, including account management, course management, and invitation issuance.
 - Decide and implement the secure first-Administrator bootstrap and staff-account provisioning/recovery process.
-- Cycle migrations and tests are reported complete locally. Entering the real cycle dates can wait until the team agrees on the next supplementary cycle schedule. (2026-11-03)
+- Cycle migrations and tests are reported complete locally. The November 2026 schedule is now seeded as the initial cycle; create a demo cycle only after it has elapsed. (2026-11-03)
 - Keep real email setup paused until Felicia is ready to configure Gmail SMTP with the project App Password; then test invitation delivery to a real recipient.
 - **Possible improvement — invitation send history**: Consider adding a `sent_at` timestamp to record when the mail provider accepts an invitation email. `used_at` records account setup/acceptance, not email sending. This is an audit/history improvement and is not required for invitation verification or acceptance. Decide later whether this history is needed; no code change is authorized by this note. (Discussed 2026-11-03)
 - Before starting the remaining course-management, account-management, or API work, confirm with the other members which shared endpoints and features they depend on; these tasks can be scheduled after that coordination.

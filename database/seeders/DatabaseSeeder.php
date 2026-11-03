@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\SupplementaryCycle;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -111,6 +112,17 @@ class DatabaseSeeder extends Seeder
                 ['course_code' => $course['course_code']],
                 $course
             );
+        }
+
+        // 4. Add the initial cycle only when no current cycle is already configured.
+        if (! SupplementaryCycle::query()->where('is_current', true)->exists()) {
+            SupplementaryCycle::create([
+                'name' => 'November 2026 Supplementary Cycle',
+                'registration_starts_at' => '2026-11-06 15:30:00',
+                'registration_ends_at' => '2026-11-10 15:35:00',
+                'student_access_ends_at' => '2026-11-12 15:40:00',
+                'is_current' => true,
+            ]);
         }
     }
 }
