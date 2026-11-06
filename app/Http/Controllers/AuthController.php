@@ -376,11 +376,12 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        $staffLogout = Auth::user()?->isAdmin() || Auth::user()?->isChiefExaminer();
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')
+        return redirect()->route($staffLogout ? 'staff.login' : 'login')
             ->with('status', 'You have been safely logged out.');
     }
 

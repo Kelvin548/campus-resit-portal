@@ -38,7 +38,84 @@
         </div>
 
         <!-- Application Form -->
-        <form method="POST" action="{{ route('student.storeRegistration') }}" class="space-y-5">
+        <form method="POST" action="{{ route('student.storeRegistration') }}" enctype="multipart/form-data" class="space-y-5">
+    <!-- Exam type selector -->
+    <div class="mt-4">
+        <label class="block text-sm font-medium text-slate-700">Exam type</label>
+        <select name="exam_type" id="exam_type"
+                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                required onchange="toggleSupplementaryFields(this.value)">
+            <option value="resit" {{ old('exam_type') === 'supplementary' ? '' : 'selected' }}>Resit (fee applies)</option>
+            <option value="supplementary" {{ old('exam_type') === 'supplementary' ? 'selected' : '' }}>Supplementary (no fee)</option>
+        </select>
+{{-- New fields for both exam types --}}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Name</label>
+        <input type="text" name="name" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Department</label>
+        <input type="text" name="department" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Index Number</label>
+        <input type="text" name="index_number" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Level</label>
+        <input type="text" name="level" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Programme</label>
+        <input type="text" name="programme" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">No. of paper(s)</label>
+        <input type="number" name="number_of_papers" min="1" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Course Title &amp; Code, Lecturer's Name</label>
+        <textarea name="course_details" rows="3" class="mt-1 block w-full rounded-md border-slate-300" placeholder="Enter each course on a new line"></textarea>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Entry</label>
+        <input type="text" name="year_of_entry" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Completion</label>
+        <input type="text" name="year_of_completion" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Telephone Number(s)</label>
+        <input type="text" name="telephone" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+</div>
+
+    </div>
+
+    <!-- Supplementary only fields (hidden by default) -->
+    <div id="supplementary_fields" class="mt-4 hidden">
+        <label class="block text-sm font-medium text-slate-700">Medical Report (PDF, max 2 MB)</label>
+        <input type="file" name="medical_report" accept="application/pdf"
+               class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"/>
+        <label class="block text-sm font-medium text-slate-700 mt-4">Letter from Doctor / Institution (PDF, max 2 MB)</label>
+        <input type="file" name="letter" accept="application/pdf"
+               class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"/>
+    </div>
+    <script>
+        function toggleSupplementaryFields(value) {
+            const div = document.getElementById('supplementary_fields');
+            if (value === 'supplementary') {
+                div.classList.remove('hidden');
+            } else {
+                div.classList.add('hidden');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleSupplementaryFields(document.getElementById('exam_type').value);
+        });
+    </script>
             @csrf
             <input type="hidden" name="course_id" value="{{ $course->id }}">
 
@@ -50,6 +127,50 @@
                         <option value="2026/2027" selected>2026/2027</option>
                         <option value="2025/2026">2025/2026</option>
                     </select>
+{{-- New fields for both exam types --}}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Name</label>
+        <input type="text" name="name" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Department</label>
+        <input type="text" name="department" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Index Number</label>
+        <input type="text" name="index_number" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Level</label>
+        <input type="text" name="level" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Programme</label>
+        <input type="text" name="programme" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">No. of paper(s)</label>
+        <input type="number" name="number_of_papers" min="1" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Course Title &amp; Code, Lecturer's Name</label>
+        <textarea name="course_details" rows="3" class="mt-1 block w-full rounded-md border-slate-300" placeholder="Enter each course on a new line"></textarea>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Entry</label>
+        <input type="text" name="year_of_entry" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Completion</label>
+        <input type="text" name="year_of_completion" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Telephone Number(s)</label>
+        <input type="text" name="telephone" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+</div>
+
                 </div>
 
                 <div>
@@ -59,6 +180,50 @@
                         <option value="Semester 1" {{ $course->semester == 'Semester 1' ? 'selected' : '' }}>Semester 1</option>
                         <option value="Semester 2" {{ $course->semester == 'Semester 2' ? 'selected' : '' }}>Semester 2</option>
                     </select>
+{{-- New fields for both exam types --}}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Name</label>
+        <input type="text" name="name" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Department</label>
+        <input type="text" name="department" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Index Number</label>
+        <input type="text" name="index_number" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Level</label>
+        <input type="text" name="level" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Programme</label>
+        <input type="text" name="programme" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">No. of paper(s)</label>
+        <input type="number" name="number_of_papers" min="1" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Course Title &amp; Code, Lecturer's Name</label>
+        <textarea name="course_details" rows="3" class="mt-1 block w-full rounded-md border-slate-300" placeholder="Enter each course on a new line"></textarea>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Entry</label>
+        <input type="text" name="year_of_entry" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700">Year of Completion</label>
+        <input type="text" name="year_of_completion" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+    <div class="col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Telephone Number(s)</label>
+        <input type="text" name="telephone" class="mt-1 block w-full rounded-md border-slate-300" required />
+    </div>
+</div>
+
                 </div>
             </div>
 

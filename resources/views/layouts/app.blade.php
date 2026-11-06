@@ -74,9 +74,9 @@
                            class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.dashboard') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                             Dashboard
                         </a>
-                        <a href="{{ route('student.courses') }}" 
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.courses*') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            Available Courses
+                        <a href="{{ route('student.registration') }}"
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.registration') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            Registration
                         </a>
                         <a href="{{ route('student.timetable') }}" 
                            class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.timetable') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">

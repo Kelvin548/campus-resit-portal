@@ -61,8 +61,13 @@ class StudentPortalController extends Controller
     }
 
     /**
-     * Display available courses and fee breakdown to students.
+     * Show the registration hub page with separate Resit and Supplementary buttons.
      */
+    public function registration(): View
+    {
+        return view('student.registration');
+    }
+
     public function courses(Request $request): View
     {
         /** @var User $user */
@@ -144,51 +149,97 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        if (! SupplementaryCycle::registrationIsOpenNow()) {
-            return back()->with('error', 'The supplementary registration period is closed.');
+        // -------------------------------------------------
+        // 1️⃣ Determine exam type (resit or supplementary)
+        // -------------------------------------------------
+        $examType = $request->input('exam_type', 'resit'); // default to resit
+
+        // -------------------------------------------------
+        // 2️⃣ Common validation rules
+        // -------------------------------------------------
+        $commonRules = [
+            'course_id'      => ['required', 'exists:courses,id'],
+            'semester'       => ['required', 'string', 'max:50'],
+            'academic_year'  => ['required', 'string', 'max:50'],
+            'exam_type'      => ['required', 'in:resit,supplementary'],
+        ];
+
+        // -------------------------------------------------
+        // 3️⃣ Additional rules for supplementary exams
+        // -------------------------------------------------
+        $supplementaryRules = [
+            'medical_report' => ['required', 'file', 'mimes:pdf', 'max:2048'],
+            'letter'         => ['required', 'file', 'mimes:pdf', 'max:2048'],
+        ];
+
+        $rules = $commonRules;
+        if ($examType === 'supplementary') {
+            $rules = array_merge($rules, $supplementaryRules);
         }
 
-        $validated = $request->validate([
-            'course_id' => ['required', 'exists:courses,id'],
-            'semester' => ['required', 'string', 'max:50'],
-            'academic_year' => ['required', 'string', 'max:50'],
-            'resit_reason' => ['nullable', 'string', 'max:500'],
-        ]);
+        $validated = $request->validate($rules);
 
+        // -------------------------------------------------
+        // 4️⃣ Retrieve the course and run generic checks
+        // -------------------------------------------------
         $course = Course::findOrFail($validated['course_id']);
-
-        // Recheck the global registration period immediately before creating the registration.
-        if (! SupplementaryCycle::registrationIsOpenNow()) {
-            return back()->with('error', 'The supplementary registration period is closed.');
-        }
-
         if (! $course->is_active) {
-            return back()->with('error', 'This course is not currently offered for supplementary registration.');
+            return back()->with('error', 'This course is not currently offered.');
         }
 
-        // Check for duplicate registration
-        $exists = Registration::where('user_id', $user->id)
+        // -------------------------------------------------
+        // 5️⃣ Guard against duplicate registrations
+        // -------------------------------------------------
+        $duplicate = Registration::where('user_id', $user->id)
             ->where('course_id', $course->id)
             ->where('semester', $validated['semester'])
             ->where('academic_year', $validated['academic_year'])
             ->exists();
 
-        if ($exists) {
+        if ($duplicate) {
             return redirect()->route('student.dashboard')
-                ->with('error', "You have already registered for {$course->course_code} for the {$validated['academic_year']} {$validated['semester']}.");
+                ->with('error', "You have already registered for {$course->course_code} for {$validated['academic_year']} {$validated['semester']}.");
         }
 
-        // Create the registration record
-        $registration = Registration::create([
-            'user_id' => $user->id,
-            'course_id' => $course->id,
-            'semester' => $validated['semester'],
-            'academic_year' => $validated['academic_year'],
-            'status' => Registration::STATUS_PENDING_PAYMENT,
+        // -------------------------------------------------
+        // 6️⃣ Branch based on exam type
+        // -------------------------------------------------
+        if ($examType === 'resit') {
+            // ---- Resit (paid) flow ----
+            $registration = Registration::create([
+                'user_id'        => $user->id,
+                'course_id'      => $course->id,
+                'semester'       => $validated['semester'],
+                'academic_year'  => $validated['academic_year'],
+                'status'         => Registration::STATUS_PENDING_PAYMENT,
+            ]);
+
+            return redirect()->route('student.dashboard')
+                ->with('success', 'Resit registration saved – please proceed to payment.');
+        }
+
+        // ---- Supplementary (free, with uploads) ----
+        // Store uploaded files
+        $medicalPath = $request->file('medical_report')->store('supplementary/medical', 'public');
+        $letterPath   = $request->file('letter')->store('supplementary/letters', 'public');
+
+        // Create supplementary application and its item
+        $suppApp = SupplementaryApplication::create([
+            'user_id'        => $user->id,
+            'status'         => 'pending_approval',
+            'medical_report' => $medicalPath,
+            'letter'         => $letterPath,
+        ]);
+
+        SupplementaryApplicationItem::create([
+            'supplementary_application_id' => $suppApp->id,
+            'course_id'                    => $course->id,
+            'semester'                     => $validated['semester'],
+            'academic_year'                => $validated['academic_year'],
         ]);
 
         return redirect()->route('student.dashboard')
-            ->with('status', "Registration submitted successfully for {$course->course_code}! Please complete payment to confirm your seat.");
+            ->with('success', 'Supplementary application submitted – awaiting approval.');
     }
 
     /**
