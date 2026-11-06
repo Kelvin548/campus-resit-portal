@@ -71,12 +71,7 @@
                 <h2 class="text-lg font-bold text-slate-900">My Registered Resit Courses</h2>
                 <p class="text-xs text-slate-500 mt-0.5">Track your submissions, fees, payment verifications, and approvals</p>
             </div>
-            <a href="{{ route('student.courses') }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
-                <span>Browse course catalog</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+
         </div>
 
         @if($registrations->isEmpty())
@@ -88,8 +83,13 @@
                 </div>
                 <h3 class="text-base font-semibold text-slate-800">No course registrations yet</h3>
                 <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">You have not registered for any resit courses this semester. Check available courses to get started.</p>
-                <a href="{{ route('student.courses') }}" class="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-semibold text-sm hover:bg-brand-700 transition">
-                    Register for a Resit Course
+
+                <!-- Resit / Supplementary Exam Request button -->
+                <a href="{{ route('student.resit-form') }}" class="px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium text-sm border border-green-500 transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M8 16h8M8 8h8"/>
+                    </svg>
+                    <span>Resit / Supplementary Request</span>
                 </a>
             </div>
         @else
@@ -170,6 +170,13 @@
                                         </svg>
                                         <span>Exam Slip</span>
                                     </a>
+                <!-- Resit / Supplementary Exam Request button -->
+                <a href="{{ route('student.resit-form') }}" class="px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium text-sm border border-green-500 transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M8 16h8M8 8h8"/>
+                    </svg>
+                    <span>Resit / Supplementary Request</span>
+                </a>
                                 @endif
                             </td>
                         </tr>

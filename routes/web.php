@@ -61,6 +61,8 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
 
     // Available Courses Catalog & Details
     Route::get('/courses', [StudentPortalController::class, 'courses'])->name('courses');
+    // Registration hub page (replaces Available Courses)
+    Route::get('/registration', [StudentPortalController::class, 'registration'])->name('registration');
     Route::get('/courses/{course}/register', [StudentPortalController::class, 'showRegistrationForm'])->name('registerCourseForm');
 
     // Registration Submission & Duplicate Prevention
@@ -74,4 +76,8 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
 
     // Printable Examination Admission Slip
     Route::get('/registrations/{registration}/slip', [StudentPortalController::class, 'examSlip'])->name('examSlip');
+
+    // New Resit / Supplementary Exam Form
+    Route::get('/resit-form', [\App\Http\Controllers\ResitExamController::class, 'showForm'])->name('resit-form');
+    Route::post('/resit-form', [\App\Http\Controllers\ResitExamController::class, 'submitForm'])->name('resit-form.submit');
 });
