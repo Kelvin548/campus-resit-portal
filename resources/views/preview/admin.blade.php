@@ -2,8 +2,45 @@
 @section('content')
 <div class="space-y-6 py-4">
     <p class="rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm text-violet-800">Demonstration view · figures and actions shown here are illustrative.</p>
-    <div class="flex flex-wrap items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-violet-600">Administrator</p><h1 class="mt-1 text-3xl font-bold text-slate-900">User and access management</h1><p class="mt-2 text-slate-500">Manage user accounts, staff roles and account access.</p></div><a href="{{ route('staff.login') }}" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Staff sign in</a></div>
+    <div class="flex flex-wrap items-end justify-between gap-4"><div><p class="text-sm font-semibold uppercase tracking-wider text-violet-600">Administrator</p><h1 class="mt-1 text-3xl font-bold text-slate-900">User and access management</h1><p class="mt-2 text-slate-500">Manage user accounts, staff roles and account access.</p></div></div>
     <div class="grid gap-4 md:grid-cols-3"><div class="rounded-2xl border bg-white p-5"><p class="text-sm text-slate-500">Student accounts</p><p class="mt-2 text-3xl font-bold">128</p></div><div class="rounded-2xl border bg-white p-5"><p class="text-sm text-slate-500">Staff accounts</p><p class="mt-2 text-3xl font-bold">02</p></div><div class="rounded-2xl border bg-white p-5"><p class="text-sm text-slate-500">Pending support</p><p class="mt-2 text-3xl font-bold">03</p></div></div>
-    <section class="overflow-hidden rounded-2xl border bg-white"><div class="flex flex-wrap items-center justify-between gap-3 p-6"><div><h2 class="text-lg font-bold">User accounts</h2><p class="mt-1 text-sm text-slate-500">Create accounts, assign roles and manage access. Password reset links are sent to the account’s verified email.</p></div><a href="{{ route('admin.staff-invitations.create') }}" class="rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white">Invite staff</a></div><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-50 text-slate-500"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email address</th><th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th><th class="px-6 py-3">Actions</th></tr></thead><tbody class="divide-y"><tr><td class="px-6 py-4 font-medium">Ama Boateng</td><td class="px-6 py-4">ama.boateng@example.com</td><td class="px-6 py-4">Student</td><td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span></td><td class="px-6 py-4"><button type="button" onclick="alert('Account management will be available when this page is connected.')" class="font-medium text-violet-700">Manage</button></td></tr><tr><td class="px-6 py-4 font-medium">Kwame Mensah</td><td class="px-6 py-4">kwame.mensah@example.com</td><td class="px-6 py-4">Chief Examiner</td><td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span></td><td class="px-6 py-4"><button type="button" onclick="alert('Account management will be available when this page is connected.')" class="font-medium text-violet-700">Manage</button></td></tr></tbody></table></div><div class="border-t p-6"><p class="text-sm font-semibold text-slate-700">Account administration</p><p class="mt-2 text-sm leading-6 text-slate-500">Create and deactivate accounts, assign authorized roles, issue staff invitations, and support verified password resets. Course and timetable management is handled by the Chief Examiner.</p></div></section>
+    <section class="overflow-hidden rounded-2xl border bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-3 p-6"><div>
+            <h2 class="text-lg font-bold">User accounts</h2>
+            <p class="mt-1 text-sm text-slate-500">Create accounts, assign roles and manage access. Password reset links are sent to the account’s verified email.</p>
+        </div><a href="{{ route('admin.staff-invitations.create') }}" class="rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white">Invite staff</a></div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm"><thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-3">Name</th>
+                    <th class="px-6 py-3">Email address</th>
+                    <th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th>
+                    <th class="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                <tr><td class="px-6 py-4 font-medium">Ama Boateng</td>
+                <td class="px-6 py-4">ama.boateng@example.com</td>
+                <td class="px-6 py-4">Student</td>
+                <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span></td>
+                <td class="px-6 py-4">
+                    <button type="button" onclick="alert('Account management will be available when this page is connected.')" class="font-medium text-violet-700">Manage</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-6 py-4 font-medium">Kwame Mensah</td>
+                <td class="px-6 py-4">kwame.mensah@example.com</td>
+                <td class="px-6 py-4">Chief Examiner</td>
+                <td class="px-6 py-4"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span></td>
+                <td class="px-6 py-4">
+                    <button type="button" onclick="alert('Account management will be available when this page is connected.')" class="font-medium text-violet-700">Manage</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="border-t p-6">
+    <p class="text-sm font-semibold text-slate-700">Account administration</p>
+    <p class="mt-2 text-sm leading-6 text-slate-500">Create and deactivate accounts, assign authorized roles, issue staff invitations, and support verified password resets. Course and timetable management is handled by the Chief Examiner.</p></div></section>
 </div>
 @endsection
