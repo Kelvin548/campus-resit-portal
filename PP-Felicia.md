@@ -58,6 +58,16 @@
 - Build Chief Examiner management for supplementary courses, fees, registration dates/deadlines, and timetables.
 - Build Administrator account management, role assignment, account disablement, and password-reset support.
 
+## Administrator Account Management — Design in Progress
+- Felicia will implement the Administrator account-management code herself with step-by-step guidance; Codex must explain the structure and wait for explicit authorization before editing application files or running commands. During this design phase, read-only inspection is allowed and this project log is the only file authorized for edits.
+- Keep student account creation as student self-registration; Administrator will not create student accounts in this phase. Staff accounts (Administrator and Chief Examiner) continue to be provisioned through the existing invitation flow.
+- Use a separate Administrator account-management controller; do not add this feature logic to `AuthController`.
+- Replace illustrative dashboard counts and rows with database-backed totals and account lists. Provide separate dashboard sections/tabs for students, Chief Examiners, and Administrators so these account groups are not mixed together. Make the summary cards functional links to the corresponding account group.
+- Add pagination within the selected account group. Student list filters are academic year, level, and semester. Do not add department or results-based filters. The Administrator area will not analyze, display, or manage student results.
+- Account search is scoped to the selected account group: student searches cover student name, email, and index number; Chief Examiner and Administrator searches cover staff name and email. Search/filter selections should be preserved through pagination. (Agreed 2026-11-04)
+- Do not add role-changing actions; staff roles are set by the invitation. Implement account activation/deactivation, with safeguards against an Administrator disabling their own account or disabling the last active Administrator. Consider recording who changed account status.
+- Password reset remains explicitly paused until real email delivery is configured. Course, fee, cycle-date, timetable, and result management stay outside Administrator scope unless the team revises the role agreement.
+
 ## Member Coordination Notes
 
 These notes explain the current cross-module boundaries and are intended to be shared with Members 2, 3, and 4. Coordinate before changing a shared file; keep each member's main implementation in their module-specific controller/views where practical.
