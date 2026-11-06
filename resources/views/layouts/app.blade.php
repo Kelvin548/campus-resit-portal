@@ -55,6 +55,8 @@
 </head>
 <body class="h-full flex flex-col text-slate-800 antialiased font-sans">
 
+    @php($isStaffUser = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isChiefExaminer()))
+
     <!-- Top Navigation Bar -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,12 +65,13 @@
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center gap-3">
                         <img src="{{ asset('images/ammusted-logo.jpg') }}" alt="AMMUSTED Logo" class="h-11 w-auto object-contain">
-                        <a href="{{ auth()->check() ? route('student.dashboard') : route('login') }}" class="flex flex-col">
+                        <a href="{{ auth()->check() ? ($isStaffUser ? (auth()->user()->isAdmin() ? route('admin.dashboard') : route('chief-examiner.dashboard')) : route('student.dashboard')) : (request()->routeIs('staff.*') ? route('staff.login') : route('login')) }}" class="flex flex-col">
                             <span class="font-extrabold text-base sm:text-lg text-brand-600 leading-tight tracking-tight uppercase">AMMUSTED</span>
                             <span class="text-xs text-slate-500 font-medium hidden sm:inline">Campus Resit & Supplementary Portal</span>
                         </a>
                     </div>
                     @auth
+                    @if(!$isStaffUser)
                     <nav class="hidden sm:ml-8 sm:flex sm:space-x-4 items-center">
                         <a href="{{ route('student.dashboard') }}" 
                            class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.dashboard') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
@@ -83,6 +86,7 @@
                             Exam Timetable
                         </a>
                     </nav>
+                    @endif
                     @endauth
                 </div>
 
@@ -105,8 +109,10 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900">Log In</a>
+                        <a href="{{ request()->routeIs('staff.*') ? route('staff.login') : route('login') }}" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900">Log In</a>
+                        @if(!request()->routeIs('staff.*'))
                         <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition">Sign Up</a>
+                        @endif
                     @endauth
                 </div>
             </div>
