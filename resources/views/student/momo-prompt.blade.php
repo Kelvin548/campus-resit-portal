@@ -98,23 +98,30 @@
                 
                 <div>
                     <label for="momo_pin" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 text-center">
-                        Enter 4-Digit Mobile Money PIN
+                        Confirm Authorization on Your Phone
                     </label>
+                    <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-center mb-3">
+                        <div class="flex items-center justify-center gap-2 text-amber-800 text-xs font-bold mb-1">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span>MoMo Prompt Sent to {{ $payment->phone_number }}</span>
+                        </div>
+                        <p class="text-[11px] text-amber-700">
+                            Check your phone screen for the prompt or dial <strong>*170#</strong> (Approvals) to enter your Mobile Money PIN.
+                        </p>
+                    </div>
+
                     <div class="max-w-[200px] mx-auto">
+                        <label for="momo_pin" class="block text-[11px] text-slate-500 text-center mb-1">Enter MoMo PIN / OTP to confirm:</label>
                         <input type="password" 
                                id="momo_pin" 
                                name="momo_pin" 
-                               maxlength="4" 
-                               pattern="\d{4}" 
+                               maxlength="6" 
                                inputmode="numeric" 
                                required 
                                autofocus 
                                placeholder="••••"
-                               class="w-full tracking-[1em] text-center font-bold text-2xl py-2.5 px-3 rounded-xl border-2 border-brand-500 text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-200 transition">
+                               class="w-full tracking-[0.5em] text-center font-bold text-2xl py-2 px-3 rounded-xl border-2 border-brand-500 text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-200 transition">
                     </div>
-                    <p class="text-[11px] text-slate-400 text-center mt-1">
-                        Test Mode: Enter any 4 numbers (e.g. <span class="font-mono text-slate-600">1234</span>)
-                    </p>
                 </div>
 
                 <!-- Action Buttons -->
