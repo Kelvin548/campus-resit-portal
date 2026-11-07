@@ -22,7 +22,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         .header {
-            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
             color: #ffffff;
             padding: 28px 24px;
             text-align: center;
@@ -36,7 +36,7 @@
         .header p {
             margin: 6px 0 0 0;
             font-size: 13px;
-            color: #bfdbfe;
+            color: #fecaca;
         }
         .content {
             padding: 32px 24px;
@@ -55,14 +55,14 @@
         }
         .btn {
             display: inline-block;
-            background-color: #2563eb;
+            background-color: #881337;
             color: #ffffff !important;
             font-weight: bold;
             text-decoration: none;
-            padding: 12px 28px;
-            border-radius: 10px;
+            padding: 13px 32px;
+            border-radius: 12px;
             font-size: 14px;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
         }
         .footer {
             background-color: #f1f5f9;
@@ -73,9 +73,9 @@
             border-top: 1px solid #e2e8f0;
         }
         .note {
-            background-color: #fef3c7;
+            background-color: #fffbeb;
             border-left: 4px solid #f59e0b;
-            padding: 10px 14px;
+            padding: 12px 16px;
             font-size: 12px;
             color: #92400e;
             border-radius: 6px;
@@ -104,7 +104,7 @@
 
             <p style="font-size: 12px; color: #64748b; word-break: break-all;">
                 If you have trouble clicking the button, copy and paste this link into your browser:<br>
-                <a href="{{ $resetUrl }}" style="color: #2563eb;">{{ $resetUrl }}</a>
+                <a href="{{ $resetUrl }}" style="color: #881337;">{{ $resetUrl }}</a>
             </p>
         </div>
         <div class="footer">
