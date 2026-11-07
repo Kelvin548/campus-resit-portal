@@ -158,8 +158,45 @@ class PaymentController extends Controller
             ],
         ]);
 
-        // Call Paystack Charge API for Mobile Money
-        $paystackRes = $this->callPaystack('charge', [
+        // Call Paystack Transaction Initialize API
+        // This generates a secure Paystack checkout session that connects to Ghana telecom MoMo
+        // switches (MTN, Telecel, AT) and immediately pushes the real USSD authorization prompt
+        // directly to the student's phone to enter their PIN.
+        $callbackUrl = route('student.payments.callback');
+
+        $paystackRes = $this->callPaystack('transaction/initialize', [
+            'amount' => $amountInPesewas,
+            'email' => $user->email,
+            'currency' => 'GHS',
+            'reference' => $txRef,
+            'channels' => ['mobile_money'],
+            'callback_url' => $callbackUrl,
+            'metadata' => [
+                'registration_id' => $registration->id,
+                'course_code' => $course->course_code,
+                'student_id' => $user->id,
+                'phone_number' => $validated['phone_number'],
+                'network' => $validated['network'],
+            ],
+        ]);
+
+        if (isset($paystackRes['status']) && $paystackRes['status'] === true) {
+            $data = $paystackRes['data'] ?? [];
+            $authUrl = $data['authorization_url'] ?? null;
+
+            $payment->update([
+                'gateway_reference' => $data['reference'] ?? $txRef,
+                'gateway_response' => $data,
+            ]);
+
+            if ($authUrl) {
+                // Redirect student straight to Paystack's official MoMo gateway which triggers the phone prompt!
+                return redirect()->away($authUrl);
+            }
+        }
+
+        // Fallback: if initialize didn't return an authUrl, try charge endpoint
+        $chargeRes = $this->callPaystack('charge', [
             'amount' => $amountInPesewas,
             'email' => $user->email,
             'currency' => 'GHS',
@@ -170,46 +207,72 @@ class PaymentController extends Controller
             ],
         ]);
 
-        if (isset($paystackRes['status']) && $paystackRes['status'] === true) {
-            $data = $paystackRes['data'] ?? [];
-            $chargeStatus = $data['status'] ?? 'pending';
-
-            // If Paystack marks transaction as success immediately (Test mode or auto-settlement)
-            if ($chargeStatus === 'success') {
-                $paidAt = now();
-                $payment->update([
-                    'status' => Payment::STATUS_SUCCESSFUL,
-                    'paid_at' => $paidAt,
-                    'gateway_reference' => $data['reference'] ?? $txRef,
-                    'gateway_response' => $data,
-                ]);
-
-                $registration->update([
-                    'status' => Registration::STATUS_PAID,
-                ]);
-
-                return redirect()->route('student.payments.receipt', $payment)
-                    ->with('success', 'Mobile Money payment received and verified successfully via Paystack!');
-            }
-
-            // Paystack sent USSD prompt to phone (pay_offline / send_otp / pending)
+        if (isset($chargeRes['status']) && $chargeRes['status'] === true) {
+            $data = $chargeRes['data'] ?? [];
             $payment->update([
                 'gateway_reference' => $data['reference'] ?? $txRef,
                 'gateway_response' => $data,
             ]);
 
             return redirect()->route('student.payments.authorize', $payment)
-                ->with('info', $paystackRes['message'] ?? 'Please authorize the payment prompt sent to your mobile device.');
+                ->with('info', 'Please check your phone screen to authorize the deduction.');
         }
 
         // If gateway returned an error
-        $errorMsg = $paystackRes['message'] ?? 'Could not initiate Mobile Money transaction with gateway.';
+        $errorMsg = $paystackRes['message'] ?? $chargeRes['message'] ?? 'Could not connect with Mobile Money gateway.';
         $payment->update([
             'status' => Payment::STATUS_FAILED,
             'gateway_response' => $paystackRes,
         ]);
 
         return back()->with('error', 'Mobile Money Gateway Error: ' . $errorMsg);
+    }
+
+    /**
+     * Handle return from Paystack checkout redirect.
+     */
+    public function handleGatewayCallback(Request $request): RedirectResponse
+    {
+        $reference = $request->query('reference');
+
+        if (! $reference) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'No transaction reference found in callback.');
+        }
+
+        $payment = Payment::where('transaction_reference', $reference)
+            ->orWhere('gateway_reference', $reference)
+            ->first();
+
+        if (! $payment) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Transaction not found for reference: ' . $reference);
+        }
+
+        // Verify transaction with Paystack
+        $verifyRes = $this->callPaystack('transaction/verify/' . urlencode($reference), [], 'GET');
+
+        if (isset($verifyRes['status']) && $verifyRes['status'] === true) {
+            $data = $verifyRes['data'] ?? [];
+
+            if (($data['status'] ?? '') === 'success') {
+                $payment->update([
+                    'status' => Payment::STATUS_SUCCESSFUL,
+                    'paid_at' => now(),
+                    'gateway_response' => $data,
+                ]);
+
+                $payment->registration->update([
+                    'status' => Registration::STATUS_PAID,
+                ]);
+
+                return redirect()->route('student.payments.receipt', $payment)
+                    ->with('success', 'Mobile Money payment successful! GHS ' . number_format($payment->amount, 2) . ' deducted and verified.');
+            }
+        }
+
+        return redirect()->route('student.dashboard')
+            ->with('info', 'Payment is being processed. Once your mobile network confirms, your registration will be updated.');
     }
 
     /**

@@ -85,6 +85,7 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
 
     // Member 3: Mobile Money Payment Flow (PaymentController)
     Route::post('/registrations/{registration}/pay', [PaymentController::class, 'initiate'])->name('pay');
+    Route::get('/payments/callback', [PaymentController::class, 'handleGatewayCallback'])->name('payments.callback');
     Route::get('/payments/{payment}/authorize', [PaymentController::class, 'showAuthorize'])->name('payments.authorize');
     Route::get('/payments/{payment}/verify', [PaymentController::class, 'verifyPayment'])->name('payments.verify');
     Route::post('/payments/{payment}/process', [PaymentController::class, 'processCallback'])->name('payments.process');
