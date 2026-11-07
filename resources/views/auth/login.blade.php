@@ -95,11 +95,10 @@
                             <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">
                                 Password
                             </label>
-                            <button type="button"
-                                    onclick="toggleForgotPasswordNotice()"
-                                    class="text-xs font-semibold text-brand-600 hover:text-brand-800 hover:underline transition">
+                            <a href="{{ route('password.request') }}"
+                               class="text-xs font-semibold text-brand-600 hover:text-brand-800 hover:underline transition">
                                 Forgot password?
-                            </button>
+                            </a>
                         </div>
                         <div class="relative">
                             <input type="password"

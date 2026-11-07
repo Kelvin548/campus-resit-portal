@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChiefExaminerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\SupplementaryCycleController;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +42,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->name('chief-examiner.')->group(function () {
-    Route::view('/dashboard', 'preview.examiner')->name('dashboard');
+    Route::get('/dashboard', [ChiefExaminerController::class, 'dashboard'])->name('dashboard');
+    Route::post('/registrations/{registration}/approve', [ChiefExaminerController::class, 'approveRegistration'])->name('registrations.approve');
+    Route::post('/registrations/{registration}/reject', [ChiefExaminerController::class, 'rejectRegistration'])->name('registrations.reject');
     Route::get('/cycle-settings', [SupplementaryCycleController::class, 'edit'])->name('cycle-settings.edit');
     Route::post('/cycle-settings', [SupplementaryCycleController::class, 'save'])->name('cycle-settings.save');
 });
@@ -52,7 +56,16 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.authenticate');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+    // Password Reset Routes
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
+
+// Paystack Asynchronous Webhook
+Route::post('/paystack/webhook', [PaymentController::class, 'handleWebhook'])->name('paystack.webhook');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
@@ -70,8 +83,13 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
     // Registration Submission & Duplicate Prevention
     Route::post('/registrations', [StudentPortalController::class, 'storeRegistration'])->name('storeRegistration');
 
-    // Mobile Money Test Payment Initiation (Bridging Member 2 & 3)
-    Route::post('/registrations/{registration}/pay', [StudentPortalController::class, 'pay'])->name('pay');
+    // Member 3: Mobile Money Payment Flow (PaymentController)
+    Route::post('/registrations/{registration}/pay', [PaymentController::class, 'initiate'])->name('pay');
+    Route::get('/payments/{payment}/authorize', [PaymentController::class, 'showAuthorize'])->name('payments.authorize');
+    Route::get('/payments/{payment}/verify', [PaymentController::class, 'verifyPayment'])->name('payments.verify');
+    Route::post('/payments/{payment}/process', [PaymentController::class, 'processCallback'])->name('payments.process');
+    Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('/payments/history', [PaymentController::class, 'history'])->name('payments.history');
 
     // Published Examination Timetables
     Route::get('/timetable', [StudentPortalController::class, 'timetable'])->name('timetable');

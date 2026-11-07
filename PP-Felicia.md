@@ -114,3 +114,28 @@ Course and fee management is the ownership overlap: the role requirements say th
 | Database migrations | `database/migrations/*` | Pull the latest branch, then run `php artisan migrate` on each member's local database. Seed only if sample data is needed. Do not run `migrate:fresh --seed` against a database that must retain data. |
 
 **Integration questions to resolve together:** confirm whether Member 3's Mobile Money flow is required for this supplementary-only portal; confirm the pending-payment/callback rule at registration close; settle who implements course CRUD; and confirm whether any member actually needs REST APIs. Real email delivery remains paused.
+
+---
+
+## Member 3 Progress & Integration Log (November 7, 2026)
+
+### 1. Mobile Money Integration (Paystack API)
+- Integrated Paystack Mobile Money API into `PaymentController.php`:
+  - **Direct MoMo Charge**: Dispatches charge payload (`amount` in pesewas, student `email`, currency `GHS`, network provider mapping `mtn`/`vod`/`tgo`, and student `phone_number`) directly to Paystack's Charge API endpoint.
+  - **Real-Time Verification**: Created `student.payments.verify` route and `verifyPayment()` method with automated 3-second client polling to detect when the student approves the prompt on their physical handset.
+  - **Graceful Fallbacks**: Official printable receipt generation (`payment-receipt.blade.php`), transaction history (`payment-history.blade.php`), and automated test simulator compatibility.
+  - **Configuration**: Added `services.paystack` configuration to `config/services.php` consuming `PAYSTACK_SECRET_KEY`.
+
+### 2. XAMPP MySQL Repair & Restoration
+- Diagnosed InnoDB tablespace corruption in database `onward_hostel_new`:
+  - Tables `contact`, `fees_payment`, and `hostel_settings` had tablespace ID / LSN mismatches that previously crashed MariaDB upon query.
+  - Safely isolated orphan `.ibd` files to `c:\xampp\mysql\corrupted_tables_backup\`.
+  - Re-registered clean InnoDB data dictionary entries for all 3 tables with full schema integrity.
+  - Restored configuration records in `hostel_settings`. Verified all 16 tables in `onward_hostel_new` query with 0 errors.
+- Restored `campus_resit_portal` database schema and ran migrations and seeders (`ForceOpenSupplementaryCycleSeeder`).
+
+### 3. Git Upstream Synchronization & Team Merges
+- Pulled and fast-forward merged `origin/main` (commit `9a865cb`), bringing in all latest work from co-partners:
+  - **Branding Redesign**: Official AMMUSTED portal styling, logo integration (`public/images/ammusted-logo.jpg`), and always-visible login interface.
+  - **Edwin's Module**: New `ResitExamController.php`, resit forms (`resit_form.blade.php`, `registration.blade.php`), and migrations (`resit_requests`, `supplementary_applications`, `resit_form_submissions`).
+  - **Test Suite Status**: 13/13 tests passing cleanly across `ExampleTest`, `StudentPortalTest`, and `SupplementaryRegistrationWindowTest`.

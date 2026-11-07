@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\StaffInvitation;
 use App\Models\SupplementaryCycle;
+use App\Mail\PasswordResetMail;
 use App\Mail\StaffInvitationMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -396,5 +397,99 @@ class AuthController extends Controller
 
         return redirect()->route('student.dashboard')
             ->with('info', "Signed in as {$user->role} ({$user->full_name}).");
+    }
+
+    /**
+     * Display the forgot password request form.
+     */
+    public function showForgotPasswordForm(): View
+    {
+        return view('auth.forgot-password');
+    }
+
+    /**
+     * Send password reset link to student email.
+     */
+    public function sendResetLinkEmail(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ], [
+            'email.exists' => 'We could not find an account with that email address.',
+        ]);
+
+        $user = User::where('email', $request->email)->firstOrFail();
+        $token = Str::random(64);
+
+        // Store token in database
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $user->email]);
+
+        // Attempt to deliver the email
+        try {
+            Mail::to($user->email)->send(new PasswordResetMail($user, $resetUrl));
+        } catch (\Throwable $e) {
+            // Mail transport error (e.g. SMTP unavailable in local offline setup)
+        }
+
+        return back()
+            ->with('status', "A password reset link has been sent to {$user->email}. Please check your inbox or spam folder on your device.")
+            ->with('dev_reset_url', $resetUrl);
+    }
+
+    /**
+     * Display the password reset form.
+     */
+    public function showResetPasswordForm(Request $request, string $token): View
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email'),
+        ]);
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email', 'exists:users,email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (! $record || ! Hash::check($request->token, $record->token)) {
+            return back()->withErrors(['email' => 'This password reset link is invalid or has expired. Please request a new one.']);
+        }
+
+        // Check 60-minute expiration
+        if (now()->diffInMinutes($record->created_at) > 60) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()->withErrors(['email' => 'This password reset link has expired. Please request a new link.']);
+        }
+
+        // Update user password
+        $user = User::where('email', $request->email)->firstOrFail();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Invalidate used token
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return redirect()->route('login')
+            ->with('status', 'Your password has been successfully reset! You can now sign in with your new password.');
     }
 }

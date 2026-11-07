@@ -149,6 +149,12 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        // Verify if registration is currently open
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'The supplementary registration period is closed.');
+        }
+
         // -------------------------------------------------
         // 1️⃣ Determine exam type (resit or supplementary)
         // -------------------------------------------------
@@ -161,7 +167,7 @@ class StudentPortalController extends Controller
             'course_id'      => ['required', 'exists:courses,id'],
             'semester'       => ['required', 'string', 'max:50'],
             'academic_year'  => ['required', 'string', 'max:50'],
-            'exam_type'      => ['required', 'in:resit,supplementary'],
+            'exam_type'      => ['nullable', 'in:resit,supplementary'],
         ];
 
         // -------------------------------------------------

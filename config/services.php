@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'paystack' => [
+        'secret_key' => env('PAYSTACK_SECRET_KEY', 'sk_test_cbdaa0205cafffe7349b4fe9575b188141494b30'),
+        'base_url' => env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co'),
+    ],
+
 ];
