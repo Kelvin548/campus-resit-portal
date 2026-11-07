@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\SupplementaryCycleController;
@@ -19,7 +20,7 @@ Route::get('/', function () {
 // Public, read-only design previews; these contain illustrative data only.
 Route::view('/staff/login', 'auth.staff')->name('staff.login');
 Route::view('/preview/examiner', 'preview.examiner')->name('preview.examiner');
-Route::view('/preview/admin', 'preview.admin')->name('preview.admin');
+// Route::view('/preview/admin', 'preview.admin')->name('preview.admin');
 
 Route::post('/staff/login', [AuthController::class, 'staffLogin'])->name('staff.authenticate')->middleware('guest');
 Route::get('/staff/invitation', [AuthController::class, 'showStaffInvitation'])->name('staff.invitation')->middleware('guest');
@@ -29,7 +30,8 @@ Route::post('/staff/invitation/complete', [AuthController::class, 'completeStaff
 
 // Role-protected dashboards and Chief Examiner cycle-date settings.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::view('/dashboard', 'preview.admin')->name('dashboard');
+    Route::get('/dashboard', [AdminController::class,"dashboard"])->name('dashboard');
+    Route::get('/students', [AdminController::class, 'students'])->name('students.index');
     Route::get('/staff-invitations/create', [AuthController::class, 'showStaffInvitationForm'])
         ->name('staff-invitations.create');
     Route::post('/staff-invitations', [AuthController::class, 'sendStaffInvitation'])
