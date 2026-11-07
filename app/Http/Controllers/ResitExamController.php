@@ -54,13 +54,44 @@ class ResitExamController extends Controller
         $validated['user_id'] = Auth::id();
         $validated['status']   = $validated['exam_type'] === 'supplementary' ? 'pending' : 'approved';
 
-        ResitRequest::create($validated);
+        $resitRequest = ResitRequest::create($validated);
 
-        // If supplementary, show pending view; otherwise a simple thank‑you.
+        // Auto-create a pending course registration so it immediately enters the payment & approval pipeline
+        if (!empty($validated['course_entries'])) {
+            foreach ($validated['course_entries'] as $entry) {
+                // Try to find course by matching course code (e.g., CS101)
+                $matchedCourse = null;
+                $activeCourses = \App\Models\Course::where('is_active', true)->get();
+                foreach ($activeCourses as $course) {
+                    if (stripos($entry, $course->course_code) !== false) {
+                        $matchedCourse = $course;
+                        break;
+                    }
+                }
+
+                // If not matched by code, fall back to first active course
+                if (!$matchedCourse) {
+                    $matchedCourse = $activeCourses->first();
+                }
+
+                if ($matchedCourse) {
+                    \App\Models\Registration::firstOrCreate([
+                        'user_id' => Auth::id(),
+                        'course_id' => $matchedCourse->id,
+                        'semester' => 'First Semester',
+                        'academic_year' => '2026/2027',
+                    ], [
+                        'status' => \App\Models\Registration::STATUS_PENDING_PAYMENT,
+                    ]);
+                }
+            }
+        }
+
+        // If supplementary, show pending view; otherwise redirect to student dashboard to pay
         if ($validated['exam_type'] === 'supplementary') {
             return view('student.resit_pending');
         }
-        return redirect()->route('student.dashboard')->with('status', 'Resit request submitted successfully.');
+        return redirect()->route('student.dashboard')->with('status', 'Resit request submitted! Please proceed to pay your course fee with Mobile Money below.');
     }
 }
 ?>
