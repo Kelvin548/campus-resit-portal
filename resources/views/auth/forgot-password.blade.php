@@ -31,18 +31,6 @@
             </div>
         @endif
 
-        <!-- Direct Dev Link for quick testing when mailer is log -->
-        @if (session('dev_reset_url'))
-            <div class="mb-5 rounded-2xl bg-blue-50 border border-blue-200 p-4 text-xs text-blue-900">
-                <p class="font-bold flex items-center gap-1.5 text-blue-800 mb-1">
-                    <span>⚡ Quick Test Link (Local Dev Mode):</span>
-                </p>
-                <a href="{{ session('dev_reset_url') }}" class="font-semibold text-brand-600 hover:underline break-all">
-                    {{ session('dev_reset_url') }} &rarr;
-                </a>
-            </div>
-        @endif
-
         <!-- Error Notification -->
         @if ($errors->any())
             <div class="mb-5 rounded-2xl bg-rose-50 border border-rose-200 p-4 text-xs text-rose-800">

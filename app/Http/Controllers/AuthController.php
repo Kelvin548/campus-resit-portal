@@ -440,8 +440,7 @@ class AuthController extends Controller
         }
 
         return back()
-            ->with('status', "A password reset link has been sent to {$user->email}. Please check your inbox or spam folder on your device.")
-            ->with('dev_reset_url', $resetUrl);
+            ->with('status', "A password reset link has been sent to {$user->email}. Please check your inbox or spam folder on your device.");
     }
 
     /**
