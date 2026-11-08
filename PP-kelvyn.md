@@ -240,6 +240,7 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-03 | `tests/Feature/ExampleTest.php` | Modified | Line 17 | Updated root redirect assertion to `/login` ensuring 100% test suite pass rate. |
 | 2026-11-03 | `PP-kelvyn.md` | Modified | Lines 1–305 | Documented AMMUSTED UI redesign, co-partner integration, and updated audit change log. |
 | 2026-11-08 | System-wide (`layouts`, `auth/login`, `auth/staff`, `emails`, `PaymentController`, `PasswordResetMail`) | Modified | Multiple | Updated institutional identity from AAMUSTED to USTED ("University of Skills Training and Entrepreneurial Development") across all portal UI views, email templates, and controllers. |
+| 2026-11-08 | `app/Http/Controllers/AuthController.php` & `tests/Feature/StaffLoginTest.php` | Modified / Created | Lines 60–108, 406–420 | Fixed Chief Examiner / Staff sign-in so credentials entered on either the primary login page or the staff login screen authenticate and redirect directly to their workspace dashboard. |
 
 ---
 

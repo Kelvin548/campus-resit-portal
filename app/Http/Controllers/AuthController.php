@@ -64,6 +64,28 @@ class AuthController extends Controller
             $request->merge(['login_identifier' => $request->input('email')]);
         }
 
+        $validated = $request->validate([
+            'login_identifier' => ['required', 'string', 'max:255'],
+            'password'         => ['required', 'string'],
+        ]);
+
+        $identifier = trim($validated['login_identifier']);
+        $remember   = $request->boolean('remember');
+
+        // Check if an authorized staff member (Admin / Chief Examiner) is logging in via the primary login screen
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $staffUser = User::where('email', strtolower($identifier))
+                ->whereIn('role', ['admin', 'chief_examiner'])
+                ->first();
+
+            if ($staffUser && Auth::attempt(['email' => strtolower($identifier), 'password' => $validated['password']], $remember)) {
+                $request->session()->regenerate();
+
+                return $this->redirectBasedOnRole($staffUser)
+                    ->with('status', "Welcome back, {$staffUser->full_name}!");
+            }
+        }
+
         // Enforce supplementary-cycle access window for students
         if (! SupplementaryCycle::studentPortalIsOpenNow()) {
             return redirect()->route('login')->withErrors([
@@ -71,12 +93,6 @@ class AuthController extends Controller
             ]);
         }
 
-        $validated = $request->validate([
-            'login_identifier' => ['required', 'string', 'max:255'],
-            'password'         => ['required', 'string'],
-        ]);
-
-        $identifier  = trim($validated['login_identifier']);
         $credentials = [
             'password' => $validated['password'],
             'role'     => 'student',
@@ -87,8 +103,6 @@ class AuthController extends Controller
         } else {
             $credentials['student_id_number'] = $identifier;
         }
-
-        $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
@@ -395,8 +409,15 @@ class AuthController extends Controller
             return redirect()->route('student.dashboard');
         }
 
-        return redirect()->route('student.dashboard')
-            ->with('info', "Signed in as {$user->role} ({$user->full_name}).");
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->isChiefExaminer()) {
+            return redirect()->route('chief-examiner.dashboard');
+        }
+
+        return redirect()->route('login');
     }
 
     /**
