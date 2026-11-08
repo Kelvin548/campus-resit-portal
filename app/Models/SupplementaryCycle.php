@@ -23,6 +23,7 @@ class SupplementaryCycle extends Model
         'registration_ends_at',
         'student_access_ends_at',
         'is_current',
+        'is_open',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class SupplementaryCycle extends Model
             'registration_ends_at' => 'datetime',
             'student_access_ends_at' => 'datetime',
             'is_current' => 'boolean',
+            'is_open' => 'boolean',
         ];
     }
 
@@ -61,6 +63,13 @@ class SupplementaryCycle extends Model
 
         $at ??= now();
 
+        if ($this->is_open === false) {
+            if ($at->lessThan($this->student_access_ends_at)) {
+                return self::PHASE_EXAM_ACCESS;
+            }
+            return self::PHASE_CLOSED;
+        }
+
         if ($at->lessThan($this->registration_starts_at)) {
             return self::PHASE_NOT_STARTED;
         }
@@ -78,6 +87,10 @@ class SupplementaryCycle extends Model
 
     public function registrationIsOpen(?CarbonInterface $at = null): bool
     {
+        if ($this->is_open === false) {
+            return false;
+        }
+
         return $this->phase($at) === self::PHASE_REGISTRATION;
     }
 
@@ -88,7 +101,16 @@ class SupplementaryCycle extends Model
 
     public static function registrationIsOpenNow(): bool
     {
-        return self::current()?->registrationIsOpen() ?? false;
+        $current = self::current();
+        if (! $current) {
+            return false;
+        }
+
+        if ($current->is_open === false) {
+            return false;
+        }
+
+        return $current->registrationIsOpen();
     }
 
     public static function studentPortalIsOpenNow(): bool

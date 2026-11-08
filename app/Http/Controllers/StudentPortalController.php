@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BroadcastMessage;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Registration;
+use App\Models\ResitRequest;
 use App\Models\SupplementaryCycle;
 use App\Models\Timetable;
 use App\Models\User;
@@ -48,6 +50,18 @@ class StudentPortalController extends Controller
             ->orderBy('start_time')
             ->get();
 
+        // Fetch latest broadcast announcements from Chief Examiner
+        $announcements = BroadcastMessage::where('is_active', true)->latest('id')->take(5)->get();
+
+        // Fetch student's supplementary applications and decisions
+        $supplementaryRequests = ResitRequest::where('user_id', $user->id)
+            ->where('exam_type', 'supplementary')
+            ->latest('id')
+            ->get();
+        $rejectedSupplementary = $supplementaryRequests->where('status', 'rejected')->first();
+        $approvedSupplementary = $supplementaryRequests->where('status', 'approved')->first();
+        $pendingSupplementary = $supplementaryRequests->where('status', 'pending')->first();
+
         return view('student.dashboard', [
             'student' => $user,
             'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
@@ -57,14 +71,40 @@ class StudentPortalController extends Controller
             'paidCount' => $paidCount,
             'approvedCount' => $approvedCount,
             'upcomingTimetables' => $upcomingTimetables,
+            'announcements' => $announcements,
+            'supplementaryRequests' => $supplementaryRequests,
+            'rejectedSupplementary' => $rejectedSupplementary,
+            'approvedSupplementary' => $approvedSupplementary,
+            'pendingSupplementary' => $pendingSupplementary,
+        ]);
+    }
+
+    /**
+     * Show all official Chief Examiner announcements and updates.
+     */
+    public function announcements(): View
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        $announcements = BroadcastMessage::where('is_active', true)->latest('id')->get();
+
+        return view('student.announcements', [
+            'student' => $user,
+            'announcements' => $announcements,
+            'studentRegistrationOpen' => SupplementaryCycle::registrationIsOpenNow(),
         ]);
     }
 
     /**
      * Show the registration hub page with separate Resit and Supplementary buttons.
      */
-    public function registration(): View
+    public function registration(): View|RedirectResponse
     {
+        if (! SupplementaryCycle::registrationIsOpenNow()) {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Resit applications are currently closed. Please check back later.');
+        }
+
         return view('student.registration');
     }
 
@@ -115,8 +155,8 @@ class StudentPortalController extends Controller
 
         // Verify if registration is currently open
         if (! SupplementaryCycle::registrationIsOpenNow()) {
-            return redirect()->route('student.courses')
-                ->with('error', 'The supplementary registration period is closed.');
+            return redirect()->route('student.dashboard')
+                ->with('error', 'Resit applications are currently closed. Please check back later.');
         }
 
         if (! $course->is_active) {
@@ -152,7 +192,7 @@ class StudentPortalController extends Controller
         // Verify if registration is currently open
         if (! SupplementaryCycle::registrationIsOpenNow()) {
             return redirect()->route('student.dashboard')
-                ->with('error', 'The supplementary registration period is closed.');
+                ->with('error', 'Resit applications are currently closed. Please check back later.');
         }
 
         // -------------------------------------------------

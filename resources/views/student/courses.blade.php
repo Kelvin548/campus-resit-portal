@@ -93,16 +93,8 @@
                         <!-- Details Info Grid -->
                         <div class="mt-4 grid grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
                             <div>
-                                <span class="text-slate-400 block">Level:</span>
-                                <span class="font-semibold text-slate-800">Level {{ $course->level }}</span>
-                            </div>
-                            <div>
                                 <span class="text-slate-400 block">Credits:</span>
                                 <span class="font-semibold text-slate-800">{{ $course->credit_hours }} Credit Hours</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block">Semester:</span>
-                                <span class="font-semibold text-slate-800">{{ $course->semester }}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block">Registration Fee:</span>

@@ -21,7 +21,7 @@
                Resit and Supplementary Examination Application
             </span>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Register for {{ $course->course_code }}</h1>
-            <p class="text-sm text-slate-500 mt-1">{{ $course->course_name }} • Level {{ $course->level }}</p>
+            <p class="text-sm text-slate-500 mt-1">{{ $course->course_name }} • {{ $course->credit_hours }} Credit Hours</p>
         </div>
 
         <!-- Course Summary Fee Card -->

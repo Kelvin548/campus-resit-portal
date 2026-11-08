@@ -9,7 +9,7 @@
             {{-- Institutional Wine Header Band --}}
             <div class="bg-gradient-to-r from-brand-900 via-brand-600 to-brand-700 px-8 pt-8 pb-6 text-center text-white relative">
                 <div class="inline-block bg-white p-2.5 rounded-2xl shadow-md mb-3 border border-white/20">
-                    <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED Logo" class="h-20 w-auto object-contain mx-auto">
+                    <img src="{{ asset('images/usted-logo.png') }}" alt="USTED Logo" class="h-20 w-auto object-contain mx-auto">
                 </div>
                 <h1 class="text-xl sm:text-2xl font-black tracking-tight uppercase">USTED</h1>
                 <p class="text-xs text-brand-100 font-medium leading-tight max-w-xs mx-auto mt-1">

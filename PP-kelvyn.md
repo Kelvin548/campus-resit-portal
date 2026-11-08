@@ -241,6 +241,7 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-03 | `PP-kelvyn.md` | Modified | Lines 1–305 | Documented AMMUSTED UI redesign, co-partner integration, and updated audit change log. |
 | 2026-11-08 | System-wide (`layouts`, `auth/login`, `auth/staff`, `emails`, `PaymentController`, `PasswordResetMail`) | Modified | Multiple | Updated institutional identity from AAMUSTED to USTED ("University of Skills Training and Entrepreneurial Development") across all portal UI views, email templates, and controllers. |
 | 2026-11-08 | `app/Http/Controllers/AuthController.php` & `tests/Feature/StaffLoginTest.php` | Modified / Created | Lines 60–108, 406–420 | Fixed Chief Examiner / Staff sign-in so credentials entered on either the primary login page or the staff login screen authenticate and redirect directly to their workspace dashboard. |
+| 2026-11-08 | `resources/views/layouts/app.blade.php`, `chief-examiner/dashboard.blade.php`, `DatabaseSeeder.php` | Modified | Multiple | Shortened nav buttons to 'Dashboard', 'Broadcast', and 'Cycle Settings' with tailored CSS pills and icons; added 30-second smooth auto-dismiss timer to flash notifications; updated title, role, and seeder identity to 'Chief Examination Officer'. |
 
 ---
 

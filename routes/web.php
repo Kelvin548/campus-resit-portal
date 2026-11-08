@@ -30,15 +30,14 @@ Route::post('/staff/invitation/verify', [AuthController::class, 'verifyStaffInvi
 Route::post('/staff/invitation/complete', [AuthController::class, 'completeStaffInvitation'])->name('staff.invitation.complete')->middleware(['guest', 'throttle:6,1']);
 
 
-// Role-protected dashboards and Chief Examiner cycle-date settings.
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class,"dashboard"])->name('dashboard');
-    Route::get('/students', [AdminController::class, 'students'])->name('students.index');
-    Route::get('/staff-invitations/create', [AuthController::class, 'showStaffInvitationForm'])
-        ->name('staff-invitations.create');
-    Route::post('/staff-invitations', [AuthController::class, 'sendStaffInvitation'])
-        ->name('staff-invitations.store')
-        ->middleware('throttle:10,1');
+// Role-protected Chief Examiner workspace (Simplified User Roles: Chief Examiner & Students)
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect()->route('chief-examiner.dashboard');
+    })->name('dashboard');
+    Route::get('/students', function () {
+        return redirect()->route('chief-examiner.dashboard');
+    })->name('students.index');
 });
 
 Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->name('chief-examiner.')->group(function () {
@@ -47,6 +46,24 @@ Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->na
     Route::post('/registrations/{registration}/reject', [ChiefExaminerController::class, 'rejectRegistration'])->name('registrations.reject');
     Route::get('/cycle-settings', [SupplementaryCycleController::class, 'edit'])->name('cycle-settings.edit');
     Route::post('/cycle-settings', [SupplementaryCycleController::class, 'save'])->name('cycle-settings.save');
+
+    // Course Management (CRUD)
+    Route::post('/courses', [ChiefExaminerController::class, 'storeCourse'])->name('courses.store');
+    Route::put('/courses/{course}', [ChiefExaminerController::class, 'updateCourse'])->name('courses.update');
+    Route::delete('/courses/{course}', [ChiefExaminerController::class, 'destroyCourse'])->name('courses.destroy');
+
+    // Global Registration Toggle (Applications Open / Closed)
+    Route::post('/toggle-applications', [ChiefExaminerController::class, 'toggleApplications'])->name('toggle-applications');
+
+    // Supplementary Applications Review & Decisions (Medical Reports & Letters)
+    Route::get('/resit-requests/{resitRequest}/document/{type}', [ChiefExaminerController::class, 'viewDocument'])->name('resit-requests.document');
+    Route::post('/resit-requests/{resitRequest}/approve', [ChiefExaminerController::class, 'approveSupplementary'])->name('resit-requests.approve');
+    Route::post('/resit-requests/{resitRequest}/reject', [ChiefExaminerController::class, 'rejectSupplementary'])->name('resit-requests.reject');
+
+    // Broadcast Announcements to Students & Email Dispatch
+    Route::get('/broadcasts', [ChiefExaminerController::class, 'broadcastsIndex'])->name('broadcasts.index');
+    Route::post('/broadcasts', [ChiefExaminerController::class, 'storeBroadcast'])->name('broadcasts.store');
+    Route::delete('/broadcasts/{broadcast}', [ChiefExaminerController::class, 'destroyBroadcast'])->name('broadcasts.destroy');
 });
 
 // Authentication Routes
@@ -97,6 +114,9 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
 
     // Printable Examination Admission Slip
     Route::get('/registrations/{registration}/slip', [StudentPortalController::class, 'examSlip'])->name('examSlip');
+
+    // Official Announcements & Updates from Chief Examiner
+    Route::get('/announcements', [StudentPortalController::class, 'announcements'])->name('announcements');
 
     // New Resit / Supplementary Exam Form
     Route::get('/resit-form', [\App\Http\Controllers\ResitExamController::class, 'showForm'])->name('resit-form');

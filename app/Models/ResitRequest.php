@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ResitRequest extends Model
 {
@@ -25,10 +26,15 @@ class ResitRequest extends Model
         'medical_report_path',
         'letter_path',
         'status',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'course_entries' => 'array',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
-?>
