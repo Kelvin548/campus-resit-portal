@@ -86,8 +86,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>AMMUSTED Resit Portal</h1>
-            <p>Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development</p>
+            <h1>USTED Resit Portal</h1>
+            <p>University of Skills Training and Entrepreneurial Development</p>
         </div>
         <div class="content">
             <div class="greeting">Hello, {{ $user->full_name }}!</div>
@@ -108,7 +108,7 @@
             </p>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} AMMUSTED Examination Directorate. All rights reserved.
+            &copy; {{ date('Y') }} USTED Examination Directorate. All rights reserved.
         </div>
     </div>
 </body>

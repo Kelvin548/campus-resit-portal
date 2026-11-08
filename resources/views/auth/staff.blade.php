@@ -13,11 +13,11 @@
                 </a>
                 
                 <div class="mt-10 inline-block bg-white p-2.5 rounded-2xl shadow-md border border-white/20">
-                    <img src="{{ asset('images/ammusted-logo.jpg') }}" alt="AMMUSTED Logo" class="h-16 w-auto object-contain">
+                    <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED Logo" class="h-16 w-auto object-contain">
                 </div>
 
                 <p class="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-brand-200">Staff & Examiner Workspace</p>
-                <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">AMMUSTED Examination Management</h1>
+                <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">USTED Examination Management</h1>
                 <p class="mt-3 text-sm leading-relaxed text-brand-100">Sign in with the authorized institutional staff account issued to you.</p>
 
                 <div class="mt-8 space-y-3 text-xs text-brand-100 bg-black/20 p-4 rounded-2xl border border-white/10">
@@ -33,7 +33,7 @@
             </div>
 
             <p class="mt-8 text-[11px] text-brand-200 font-medium">
-                Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development
+                University of Skills Training and Entrepreneurial Development
             </p>
         </aside>
 

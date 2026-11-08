@@ -32,7 +32,7 @@ class PaymentController extends Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'AMMUSTED-Portal/1.0 (Windows NT 10.0; Win64; x64)');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'USTED-Portal/1.0 (Windows NT 10.0; Win64; x64)');
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $secretKey,

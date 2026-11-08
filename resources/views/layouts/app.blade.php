@@ -26,7 +26,7 @@
                             300: '#f0abb8',
                             400: '#e57b8e',
                             500: '#a31d36',
-                            600: '#7a1326', // Official AMMUSTED deep wine
+                            600: '#7a1326', // Official USTED deep wine
                             700: '#640f1f',
                             800: '#520c19',
                             900: '#440a15',
@@ -64,9 +64,9 @@
                 <!-- Left: Logo & Links -->
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center gap-3">
-                        <img src="{{ asset('images/ammusted-logo.jpg') }}" alt="AMMUSTED Logo" class="h-11 w-auto object-contain">
+                        <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED Logo" class="h-11 w-auto object-contain">
                         <a href="{{ auth()->check() ? ($isStaffUser ? (auth()->user()->isAdmin() ? route('admin.dashboard') : route('chief-examiner.dashboard')) : route('student.dashboard')) : (request()->routeIs('staff.*') ? route('staff.login') : route('login')) }}" class="flex flex-col">
-                            <span class="font-extrabold text-base sm:text-lg text-brand-600 leading-tight tracking-tight uppercase">AMMUSTED</span>
+                            <span class="font-extrabold text-base sm:text-lg text-brand-600 leading-tight tracking-tight uppercase">USTED</span>
                             <span class="text-xs text-slate-500 font-medium hidden sm:inline">Campus Resit & Supplementary Portal</span>
                         </a>
                     </div>
@@ -176,7 +176,7 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; {{ date('Y') }} Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development (AMMUSTED). Campus Resit & Supplementary Examination Portal.</p>
+            <p>&copy; {{ date('Y') }} University of Skills Training and Entrepreneurial Development (USTED). Campus Resit & Supplementary Examination Portal.</p>
         </div>
     </footer>
 

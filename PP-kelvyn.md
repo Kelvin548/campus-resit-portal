@@ -2,8 +2,8 @@
 
 **Project Name:** Campus Course Registration and Examination Management System (Resit Portal)  
 **Lead Developer:** Kelvyn  
-**Last Updated:** 2026-11-03  
-**Current Status:** AMMUSTED Branding & UI Redesign Complete; Co-partner Modules Integrated & Verified  
+**Last Updated:** 2026-11-08  
+**Current Status:** USTED Institutional Branding Update Complete; Co-partner Modules Integrated & Verified  
 
 ---
 
@@ -239,6 +239,7 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-03 | `app/Http/Controllers/AuthController.php` | Modified | Lines 38–58 | Added flexible login identifier fallback supporting both email and student index numbers to prevent regressions. |
 | 2026-11-03 | `tests/Feature/ExampleTest.php` | Modified | Line 17 | Updated root redirect assertion to `/login` ensuring 100% test suite pass rate. |
 | 2026-11-03 | `PP-kelvyn.md` | Modified | Lines 1–305 | Documented AMMUSTED UI redesign, co-partner integration, and updated audit change log. |
+| 2026-11-08 | System-wide (`layouts`, `auth/login`, `auth/staff`, `emails`, `PaymentController`, `PasswordResetMail`) | Modified | Multiple | Updated institutional identity from AAMUSTED to USTED ("University of Skills Training and Entrepreneurial Development") across all portal UI views, email templates, and controllers. |
 
 ---
 

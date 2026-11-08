@@ -21,7 +21,7 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'AMMUSTED Resit Portal - Reset Your Password',
+            subject: 'USTED Resit Portal - Reset Your Password',
         );
     }
 

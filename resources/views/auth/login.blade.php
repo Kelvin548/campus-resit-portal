@@ -9,11 +9,11 @@
             {{-- Institutional Wine Header Band --}}
             <div class="bg-gradient-to-r from-brand-900 via-brand-600 to-brand-700 px-8 pt-8 pb-6 text-center text-white relative">
                 <div class="inline-block bg-white p-2.5 rounded-2xl shadow-md mb-3 border border-white/20">
-                    <img src="{{ asset('images/ammusted-logo.jpg') }}" alt="AMMUSTED Logo" class="h-20 w-auto object-contain mx-auto">
+                    <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED Logo" class="h-20 w-auto object-contain mx-auto">
                 </div>
-                <h1 class="text-xl sm:text-2xl font-black tracking-tight uppercase">AMMUSTED</h1>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight uppercase">USTED</h1>
                 <p class="text-xs text-brand-100 font-medium leading-tight max-w-xs mx-auto mt-1">
-                    Akenten Appiah-Menka University of Skills Training and Entrepreneurial Development
+                    University of Skills Training and Entrepreneurial Development
                 </p>
                 <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-brand-100 tracking-wide uppercase border border-white/10">
                     Resit &amp; Supplementary Portal
@@ -161,7 +161,7 @@
 
         {{-- Bottom Institutional Note --}}
         <p class="mt-6 text-center text-xs text-slate-500">
-            Official Academic Examination Portal &bull; AMMUSTED
+            Official Academic Examination Portal &bull; USTED
         </p>
 
     </div>
