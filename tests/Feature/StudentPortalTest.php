@@ -110,9 +110,10 @@ class StudentPortalTest extends TestCase
         $response->assertRedirect(route('student.dashboard'));
         $response->assertSessionHas('status');
 
+        // Resit payments auto-approve — no Chief Examiner manual step needed
         $this->assertDatabaseHas('registrations', [
             'id' => $registration->id,
-            'status' => Registration::STATUS_PAID,
+            'status' => Registration::STATUS_APPROVED,
         ]);
 
         $this->assertDatabaseHas('payments', [

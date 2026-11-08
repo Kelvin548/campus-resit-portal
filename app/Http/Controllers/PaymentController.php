@@ -133,7 +133,8 @@ class PaymentController extends Controller
             ]);
 
             $registration->update([
-                'status' => Registration::STATUS_PAID,
+                'status' => Registration::STATUS_APPROVED,
+                'approved_at' => now(),
             ]);
 
             return redirect()->route('student.dashboard')
@@ -263,7 +264,8 @@ class PaymentController extends Controller
                 ]);
 
                 $payment->registration->update([
-                    'status' => Registration::STATUS_PAID,
+                    'status' => Registration::STATUS_APPROVED,
+                    'approved_at' => now(),
                 ]);
 
                 return redirect()->route('student.payments.receipt', $payment)
@@ -338,7 +340,8 @@ class PaymentController extends Controller
                 ]);
 
                 $payment->registration->update([
-                    'status' => Registration::STATUS_PAID,
+                    'status' => Registration::STATUS_APPROVED,
+                    'approved_at' => now(),
                 ]);
 
                 if (request()->wantsJson()) {
@@ -418,7 +421,8 @@ class PaymentController extends Controller
         ]);
 
         $payment->registration->update([
-            'status' => Registration::STATUS_PAID,
+            'status' => Registration::STATUS_APPROVED,
+            'approved_at' => now(),
         ]);
 
         return redirect()->route('student.payments.receipt', $payment)
@@ -495,7 +499,8 @@ class PaymentController extends Controller
                         ]);
 
                         $payment->registration->update([
-                            'status' => Registration::STATUS_PAID,
+                            'status' => Registration::STATUS_APPROVED,
+                            'approved_at' => now(),
                         ]);
                     }
                 }

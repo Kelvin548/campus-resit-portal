@@ -424,12 +424,13 @@ class StudentPortalController extends Controller
             'paid_at' => now(),
         ]);
 
-        // Update registration status
+        // Update registration status to approved/confirmed
         $registration->update([
-            'status' => Registration::STATUS_PAID,
+            'status' => Registration::STATUS_APPROVED,
+            'approved_at' => now(),
         ]);
 
         return redirect()->route('student.dashboard')
-            ->with('status', "Payment of GHS {$amount} for {$course->course_code} completed successfully! Reference: {$ref}. Awaiting Chief Examiner review.");
+            ->with('status', "Payment of GHS {$amount} for {$course->course_code} completed and confirmed successfully! Reference: {$ref}. Your examination admission slip is now available.");
     }
 }

@@ -29,13 +29,16 @@ class ChiefExaminerController extends Controller
     {
         // 1. Stats
         $activeCoursesCount = Course::where('is_active', true)->count();
-        $pendingApprovalCount = Registration::where('status', Registration::STATUS_PAID)->count();
+        $pendingApprovalCount = Registration::where('status', Registration::STATUS_APPROVED)
+            ->whereHas('payment')
+            ->count();
         $approvedCount = Registration::where('status', Registration::STATUS_APPROVED)->count();
         $totalFeesCollected = Payment::where('status', Payment::STATUS_SUCCESSFUL)->sum('amount');
 
-        // 2. Registrations awaiting Chief Examiner Approval (Students who have paid via MoMo)
+        // 2. Confirmed resit registrations (auto-approved on MoMo payment — read-only view for Chief Examiner)
         $pendingApprovals = Registration::with(['user', 'course', 'payment'])
-            ->where('status', Registration::STATUS_PAID)
+            ->where('status', Registration::STATUS_APPROVED)
+            ->whereHas('payment')
             ->latest()
             ->get();
 

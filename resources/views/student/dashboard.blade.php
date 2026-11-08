@@ -266,15 +266,10 @@
                                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                         Pending Payment
                                     </span>
-                                @elseif($reg->status === 'paid')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                        Paid • Awaiting Examiner
-                                    </span>
-                                @elseif($reg->status === 'approved')
+                                @elseif($reg->status === 'approved' || $reg->status === 'paid')
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        Approved
+                                        Confirmed &amp; Cleared
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
@@ -305,17 +300,7 @@
                                     @else
                                         <span class="text-xs text-slate-400 italic">Applications closed</span>
                                     @endif
-                                @elseif($reg->status === 'paid')
-                                    <div class="inline-flex items-center gap-2">
-                                        @if($reg->payment)
-                                            <a href="{{ route('student.payments.receipt', $reg->payment) }}" 
-                                               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
-                                                <span>Receipt</span>
-                                            </a>
-                                        @endif
-                                        <span class="text-xs text-blue-700 font-medium">In Examiner Review</span>
-                                    </div>
-                                @elseif($reg->status === 'approved')
+                                @elseif($reg->status === 'approved' || $reg->status === 'paid')
                                     <div class="inline-flex items-center gap-2">
                                         @if($reg->payment)
                                             <a href="{{ route('student.payments.receipt', $reg->payment) }}" 
@@ -328,6 +313,9 @@
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                             </svg>
+                                            <span>Print Exam Slip</span>
+                                        </a>
+                                    </div>
                                             <span>Exam Slip</span>
                                         </a>
                                     </div>

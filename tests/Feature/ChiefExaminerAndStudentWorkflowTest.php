@@ -249,31 +249,15 @@ class ChiefExaminerAndStudentWorkflowTest extends TestCase
         ]);
 
         $paymentResponse->assertRedirect(route('student.dashboard'));
-        $this->assertDatabaseHas('registrations', [
-            'id' => $registration->id,
-            'status' => Registration::STATUS_PAID,
-        ]);
-
-        // 3. Chief Examiner Review Queue contains the student registration
-        $examinerDashboard = $this->actingAs($this->chiefExaminer)->get(route('chief-examiner.dashboard'));
-        $examinerDashboard->assertOk();
-        $examinerDashboard->assertSee($this->student->full_name);
-        $examinerDashboard->assertSee('ITC231');
-        $examinerDashboard->assertSee('Approve Registration');
-
-        // 4. Chief Examiner approves registration
-        $approveResponse = $this->actingAs($this->chiefExaminer)->post(route('chief-examiner.registrations.approve', $registration));
-        $approveResponse->assertSessionHas('success');
-
+        // Resit payments auto-approve — registration goes straight to approved, no Chief Examiner step needed
         $this->assertDatabaseHas('registrations', [
             'id' => $registration->id,
             'status' => Registration::STATUS_APPROVED,
         ]);
 
-        // 5. Student portal now reflects Approved status and printable Exam Slip
+        // 3. Student portal now reflects Confirmed & Cleared status and printable Exam Slip
         $studentDashboard = $this->actingAs($this->student)->get(route('student.dashboard'));
         $studentDashboard->assertOk();
-        $studentDashboard->assertSee('Approved');
         $studentDashboard->assertSee('Exam Slip');
 
         $slipResponse = $this->actingAs($this->student)->get(route('student.examSlip', $registration));

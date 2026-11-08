@@ -98,10 +98,10 @@
             <div class="mt-1 text-xs text-slate-400">Total in system: {{ $courses->count() }}</div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-amber-200 bg-amber-50/20 shadow-xs">
-            <div class="text-[11px] font-semibold text-amber-700 uppercase tracking-wider">Paid Resits Pending</div>
-            <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-amber-600">{{ $pendingApprovalCount }}</div>
-            <div class="mt-1 text-xs text-amber-700">MoMo verified queue</div>
+        <div class="bg-white p-5 rounded-2xl border border-emerald-200 bg-emerald-50/20 shadow-xs">
+            <div class="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Confirmed Resits</div>
+            <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-600">{{ $pendingApprovalCount }}</div>
+            <div class="mt-1 text-xs text-emerald-700">Auto-cleared on payment</div>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-purple-200 bg-purple-50/20 shadow-xs">
@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    <!-- Student Applications Review Hub (Split into 2 Dedicated Queues: Paid Resit vs. Supplementary) -->
+    <!-- Student Applications Review Hub (Split into 2 Dedicated Queues: Confirmed Resit vs. Supplementary) -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
@@ -132,7 +132,7 @@
                 </div>
                 <h2 class="text-xl font-bold text-slate-900">Student Examination Applications Queue</h2>
                 <p class="text-xs text-slate-500 mt-0.5">
-                    Select between paid resit registrations and supplementary requests (doctor's reports &amp; extenuating letters) to grant clearance or reject.
+                    Confirmed resit registrations are auto-cleared on payment. Only supplementary applications (doctor's reports &amp; extenuating letters) require manual review.
                 </p>
             </div>
 
@@ -141,11 +141,11 @@
                 <button type="button" 
                         id="tabResitBtn" 
                         onclick="switchQueueTab('resit')" 
-                        class="px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-brand-600 text-white shadow-xs">
+                        class="px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-emerald-600 text-white shadow-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>Paid Resits</span>
+                    <span>Confirmed Resits</span>
                     <span class="px-2 py-0.5 rounded-full text-[11px] bg-white/20 text-white font-mono">{{ $pendingApprovals->count() }}</span>
                 </button>
 
@@ -162,7 +162,7 @@
             </div>
         </div>
 
-        <!-- Tab 1: Paid Resit Applications Queue -->
+        <!-- Tab 1: Confirmed Resit Registrations (Read-only — auto-approved on payment) -->
         <div id="resitQueueContainer">
             @if($pendingApprovals->isEmpty())
                 <div class="text-center py-12 px-4">
@@ -171,9 +171,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h3 class="text-sm font-bold text-slate-900">All paid resit registrations are up to date!</h3>
+                    <h3 class="text-sm font-bold text-slate-900">No confirmed resit registrations yet.</h3>
                     <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                        There are currently no new paid student resit applications waiting for approval.
+                        Resit registrations are automatically confirmed once a student completes their MoMo payment.
                     </p>
                 </div>
             @else
@@ -186,7 +186,7 @@
                                 <th class="py-3.5 px-4">Fee Paid</th>
                                 <th class="py-3.5 px-4">MoMo Transaction</th>
                                 <th class="py-3.5 px-4">Submission Time</th>
-                                <th class="py-3.5 px-6 text-right">Approval Actions</th>
+                                <th class="py-3.5 px-6 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -221,26 +221,12 @@
                                     {{ $reg->updated_at->format('M d, Y h:i A') }}
                                 </td>
                                 <td class="py-4 px-6 text-right whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-2">
-                                        <form method="POST" action="{{ route('chief-examiner.registrations.reject', $reg) }}">
-                                            @csrf
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to reject this registration?')"
-                                                    class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs font-semibold transition">
-                                                Reject
-                                            </button>
-                                        </form>
-                                        <form method="POST" action="{{ route('chief-examiner.registrations.approve', $reg) }}">
-                                            @csrf
-                                            <button type="submit" 
-                                                    class="px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                                <span>Approve Registration</span>
-                                            </button>
-                                        </form>
-                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Confirmed &amp; Cleared
+                                    </span>
                                 </td>
                             </tr>
                             @endforeach
