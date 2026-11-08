@@ -296,14 +296,27 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $regCourseIds = Registration::where('user_id', $user->id)
+        $registeredCourseIds = Registration::where('user_id', $user->id)
             ->pluck('course_id')
             ->toArray();
-        $resitCourseIds = ResitRequest::where('user_id', $user->id)
-            ->pluck('course_id')
-            ->filter()
-            ->toArray();
-        $registeredCourseIds = array_unique(array_merge($regCourseIds, $resitCourseIds));
+
+        // Include any course IDs stored in resit_requests course_entries JSON
+        $resitRequests = ResitRequest::where('user_id', $user->id)->get();
+        foreach ($resitRequests as $req) {
+            $entries = $req->course_entries ?? [];
+            if (is_array($entries)) {
+                foreach ($entries as $entry) {
+                    if (is_numeric($entry)) {
+                        $registeredCourseIds[] = (int) $entry;
+                    } elseif (is_array($entry) && !empty($entry['id'])) {
+                        $registeredCourseIds[] = (int) $entry['id'];
+                    } elseif (is_array($entry) && !empty($entry['course_id'])) {
+                        $registeredCourseIds[] = (int) $entry['course_id'];
+                    }
+                }
+            }
+        }
+        $registeredCourseIds = array_values(array_unique($registeredCourseIds));
 
         $query = Timetable::with(['course', 'publishedBy'])
             ->where('status', Timetable::STATUS_PUBLISHED);

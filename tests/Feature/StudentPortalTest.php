@@ -141,4 +141,14 @@ class StudentPortalTest extends TestCase
         $response->assertSee('RESIT EXAMINATION ADMISSION SLIP');
         $response->assertSee($student->full_name);
     }
+
+    public function test_student_can_view_timetable_successfully(): void
+    {
+        $student = User::where('email', 'student1@campus.edu')->first();
+
+        $response = $this->actingAs($student)->get(route('student.timetable'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Official Examination Timetable');
+    }
 }
