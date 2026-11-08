@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\BroadcastMessage;
 use App\Models\Course;
 use App\Models\SupplementaryCycle;
+use App\Models\Timetable;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -463,5 +464,61 @@ class DatabaseSeeder extends Seeder
                 'emails_sent_count' => 2,
             ]
         );
+
+        // 6. Seed Sample Examination Timetables
+        $course1 = Course::where('course_code', 'ICT112')->first();
+        $course2 = Course::where('course_code', 'ITC231')->first();
+        $course3 = Course::where('course_code', 'ICT232')->first();
+
+        if ($course1) {
+            Timetable::updateOrCreate(
+                ['course_id' => $course1->id, 'exam_date' => now()->addDays(12)->format('Y-m-d')],
+                [
+                    'academic_year' => '2026/2027',
+                    'semester' => 'Supplementary & Resit Session',
+                    'start_time' => '09:00:00',
+                    'end_time' => '12:00:00',
+                    'venue' => 'ICT Lab 1 (Main Campus)',
+                    'seating_capacity' => 60,
+                    'status' => Timetable::STATUS_PUBLISHED,
+                    'published_by' => $examiner?->id,
+                    'published_at' => now(),
+                ]
+            );
+        }
+
+        if ($course2) {
+            Timetable::updateOrCreate(
+                ['course_id' => $course2->id, 'exam_date' => now()->addDays(14)->format('Y-m-d')],
+                [
+                    'academic_year' => '2026/2027',
+                    'semester' => 'Supplementary & Resit Session',
+                    'start_time' => '09:00:00',
+                    'end_time' => '12:00:00',
+                    'venue' => 'Great Hall Room A',
+                    'seating_capacity' => 120,
+                    'status' => Timetable::STATUS_PUBLISHED,
+                    'published_by' => $examiner?->id,
+                    'published_at' => now(),
+                ]
+            );
+        }
+
+        if ($course3) {
+            Timetable::updateOrCreate(
+                ['course_id' => $course3->id, 'exam_date' => now()->addDays(16)->format('Y-m-d')],
+                [
+                    'academic_year' => '2026/2027',
+                    'semester' => 'Supplementary & Resit Session',
+                    'start_time' => '13:00:00',
+                    'end_time' => '16:00:00',
+                    'venue' => 'ICT Lab 2 (Main Campus)',
+                    'seating_capacity' => 50,
+                    'status' => Timetable::STATUS_PUBLISHED,
+                    'published_by' => $examiner?->id,
+                    'published_at' => now(),
+                ]
+            );
+        }
     }
 }

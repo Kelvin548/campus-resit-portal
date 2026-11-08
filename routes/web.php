@@ -64,6 +64,13 @@ Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->na
     Route::get('/broadcasts', [ChiefExaminerController::class, 'broadcastsIndex'])->name('broadcasts.index');
     Route::post('/broadcasts', [ChiefExaminerController::class, 'storeBroadcast'])->name('broadcasts.store');
     Route::delete('/broadcasts/{broadcast}', [ChiefExaminerController::class, 'destroyBroadcast'])->name('broadcasts.destroy');
+
+    // Examination Timetable Management & Builder
+    Route::get('/timetables', [ChiefExaminerController::class, 'timetablesIndex'])->name('timetables.index');
+    Route::post('/timetables', [ChiefExaminerController::class, 'storeTimetable'])->name('timetables.store');
+    Route::put('/timetables/{timetable}', [ChiefExaminerController::class, 'updateTimetable'])->name('timetables.update');
+    Route::post('/timetables/{timetable}/toggle-status', [ChiefExaminerController::class, 'toggleTimetableStatus'])->name('timetables.toggle-status');
+    Route::delete('/timetables/{timetable}', [ChiefExaminerController::class, 'destroyTimetable'])->name('timetables.destroy');
 });
 
 // Authentication Routes

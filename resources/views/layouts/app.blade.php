@@ -193,6 +193,13 @@
                             </svg>
                             <span>Dashboard</span>
                         </a>
+                        <a href="{{ route('chief-examiner.timetables.index') }}" 
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('chief-examiner.timetables.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('chief-examiner.timetables.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Timetable</span>
+                        </a>
                         <a href="{{ route('chief-examiner.broadcasts.index') }}" 
                            class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('chief-examiner.broadcasts.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
                             <svg class="w-4 h-4 {{ request()->routeIs('chief-examiner.broadcasts.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">

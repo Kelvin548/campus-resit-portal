@@ -394,4 +394,82 @@ class ChiefExaminerAndStudentWorkflowTest extends TestCase
         $studentDashboard->assertSee($rejectionReason);
         $studentDashboard->assertSee('Go Back & Register Resits');
     }
+
+    public function test_chief_examiner_can_schedule_publish_and_student_views_timetable(): void
+    {
+        $course = Course::where('course_code', 'ICT112')->firstOrFail();
+
+        // 1. Chief Examiner navigates to timetables builder
+        $viewResponse = $this->actingAs($this->chiefExaminer)->get(route('chief-examiner.timetables.index'));
+        $viewResponse->assertOk();
+        $viewResponse->assertSee('Examination Timetable Builder');
+
+        // 2. Chief Examiner schedules and publishes an exam paper
+        $storeResponse = $this->actingAs($this->chiefExaminer)->post(route('chief-examiner.timetables.store'), [
+            'course_id' => $course->id,
+            'academic_year' => '2026/2027',
+            'semester' => 'Supplementary & Resit Session',
+            'exam_date' => '2026-11-25',
+            'start_time' => '09:00',
+            'end_time' => '12:00',
+            'venue' => 'ICT Lab 1 (Main Campus)',
+            'seating_capacity' => 60,
+            'status' => 'published',
+        ]);
+
+        $storeResponse->assertRedirect();
+        $storeResponse->assertSessionHas('status');
+
+        $this->assertDatabaseHas('timetables', [
+            'course_id' => $course->id,
+            'venue' => 'ICT Lab 1 (Main Campus)',
+            'status' => 'published',
+        ]);
+
+        // 3. Student views the official published timetable
+        $studentTimetable = $this->actingAs($this->student)->get(route('student.timetable'));
+        $studentTimetable->assertOk();
+        $studentTimetable->assertSee('ICT112');
+        $studentTimetable->assertSee('Principles of Programming');
+        $studentTimetable->assertSee('ICT Lab 1 (Main Campus)');
+        $studentTimetable->assertSee('09:00 AM - 12:00 PM');
+    }
+
+    public function test_chief_examiner_timetable_clash_detection_prevents_double_booking(): void
+    {
+        $course1 = Course::where('course_code', 'ICT112')->firstOrFail();
+        $course2 = Course::where('course_code', 'ITC231')->firstOrFail();
+
+        // Schedule first exam at ICT Lab 1
+        $this->actingAs($this->chiefExaminer)->post(route('chief-examiner.timetables.store'), [
+            'course_id' => $course1->id,
+            'academic_year' => '2026/2027',
+            'semester' => 'Supplementary & Resit Session',
+            'exam_date' => '2026-11-25',
+            'start_time' => '09:00',
+            'end_time' => '12:00',
+            'venue' => 'ICT Lab 1 (Main Campus)',
+            'seating_capacity' => 60,
+            'status' => 'published',
+        ]);
+
+        // Attempt to schedule conflicting exam at same venue and overlapping time window (10:00 - 13:00)
+        $conflictResponse = $this->actingAs($this->chiefExaminer)->post(route('chief-examiner.timetables.store'), [
+            'course_id' => $course2->id,
+            'academic_year' => '2026/2027',
+            'semester' => 'Supplementary & Resit Session',
+            'exam_date' => '2026-11-25',
+            'start_time' => '10:00',
+            'end_time' => '13:00',
+            'venue' => 'ICT Lab 1 (Main Campus)',
+            'seating_capacity' => 50,
+            'status' => 'published',
+        ]);
+
+        $conflictResponse->assertSessionHas('error');
+        $this->assertDatabaseMissing('timetables', [
+            'course_id' => $course2->id,
+            'venue' => 'ICT Lab 1 (Main Campus)',
+        ]);
+    }
 }

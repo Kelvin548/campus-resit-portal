@@ -457,6 +457,166 @@
         </div>
     </div>
 
+    <!-- TIMETABLE BUILDER SECTION (Construct, Insert & Publish Examination Timetables) -->
+    <div id="timetable-section" class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-1">
+                    <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Academic Examination Timetables</span>
+                </div>
+                <h2 class="text-lg font-bold text-slate-900">Examination Timetable Builder &amp; Master Schedule</h2>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Construct and schedule exam papers, allocate venues and times, and publish timetable entries directly to the student portal.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('chief-examiner.timetables.index') }}" 
+                   class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs shadow-xs transition flex items-center gap-1.5">
+                    <span>Full Timetable View</span>
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <button type="button" 
+                        onclick="openDashboardScheduleModal()"
+                        class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 hover:from-brand-950 hover:to-brand-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Schedule Exam Paper</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                    <tr>
+                        <th class="py-3 px-6">Course</th>
+                        <th class="py-3 px-4">Exam Date &amp; Day</th>
+                        <th class="py-3 px-4">Time Window</th>
+                        <th class="py-3 px-4">Venue &amp; Room</th>
+                        <th class="py-3 px-4">Capacity</th>
+                        <th class="py-3 px-4">Status (Visibility)</th>
+                        <th class="py-3 px-6 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium">
+                    @forelse($timetables as $tt)
+                        @php
+                            $startTime = \Carbon\Carbon::parse($tt->start_time);
+                            $endTime = \Carbon\Carbon::parse($tt->end_time);
+                            $durationMinutes = $startTime->diffInMinutes($endTime);
+                            $durationHours = round($durationMinutes / 60, 1);
+                        @endphp
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-3.5 px-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-black bg-brand-50 text-brand-700 border border-brand-200">
+                                        {{ $tt->course->course_code ?? 'N/A' }}
+                                    </span>
+                                    <span class="font-bold text-slate-900">{{ $tt->course->course_name ?? 'Course' }}</span>
+                                </div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">
+                                    {{ $tt->academic_year }} &bull; {{ $tt->semester }}
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="font-bold text-slate-900">{{ \Carbon\Carbon::parse($tt->exam_date)->format('D, M d, Y') }}</span>
+                                <div class="text-[10px] text-slate-400">{{ \Carbon\Carbon::parse($tt->exam_date)->diffForHumans() }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <div class="font-semibold text-slate-800">{{ $startTime->format('h:i A') }} &ndash; {{ $endTime->format('h:i A') }}</div>
+                                <div class="text-[10px] text-slate-400">{{ $durationHours }} hrs ({{ $durationMinutes }} mins)</div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 font-bold text-slate-900">
+                                    <svg class="w-3.5 h-3.5 text-brand-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    {{ $tt->venue }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-semibold">
+                                    {{ $tt->seating_capacity }} seats
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                @if($tt->isPublished())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span>Published</span>
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        <span>Draft</span>
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-6 text-right whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <!-- Toggle Publish Status -->
+                                    <form method="POST" action="{{ route('chief-examiner.timetables.toggle-status', $tt->id) }}" class="inline">
+                                        @csrf
+                                        @if($tt->isPublished())
+                                            <button type="submit" 
+                                                    title="Unpublish (move to draft)"
+                                                    class="px-2 py-1 rounded border border-slate-300 text-slate-600 hover:bg-slate-100 text-[11px] font-semibold transition">
+                                                Unpublish
+                                            </button>
+                                        @else
+                                            <button type="submit" 
+                                                    title="Publish immediately to student timetable"
+                                                    class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition shadow-xs">
+                                                Publish
+                                            </button>
+                                        @endif
+                                    </form>
+
+                                    <!-- Edit Timetable Button -->
+                                    <button type="button" 
+                                            onclick="openDashboardEditTimetableModal({{ json_encode($tt) }})"
+                                            class="px-2 py-1 rounded border border-slate-300 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold transition">
+                                        Edit
+                                    </button>
+
+                                    <!-- Delete Timetable Button -->
+                                    <form method="POST" action="{{ route('chief-examiner.timetables.destroy', $tt->id) }}" class="inline" onsubmit="return confirm('Delete timetable paper for {{ $tt->course->course_code }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1 rounded text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition" title="Delete timetable">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-10 text-center text-slate-400">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="font-bold text-slate-700">No examination papers scheduled yet.</div>
+                                <div class="text-xs text-slate-500 mt-0.5">Click "Schedule Exam Paper" above to construct timetable papers for students.</div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Recently Approved Registrations & Decisions -->
     @if($processedRegistrations->isNotEmpty() || $processedSupplementary->isNotEmpty())
     <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
@@ -768,13 +928,247 @@
         document.getElementById('editCourseModal').classList.add('hidden');
     }
 
+    // Dashboard Timetable Modal Functions
+    function openDashboardScheduleModal() {
+        document.getElementById('dashScheduleModal').classList.remove('hidden');
+    }
+
+    function closeDashboardScheduleModal() {
+        document.getElementById('dashScheduleModal').classList.add('hidden');
+    }
+
+    function openDashboardEditTimetableModal(tt) {
+        document.getElementById('dashEditTimetableForm').action = '/chief-examiner/timetables/' + tt.id;
+        document.getElementById('dash-edit-course-id').value = tt.course_id;
+        document.getElementById('dash-edit-year').value = tt.academic_year;
+        document.getElementById('dash-edit-semester').value = tt.semester;
+        
+        const dateVal = tt.exam_date ? tt.exam_date.substring(0, 10) : '';
+        document.getElementById('dash-edit-date').value = dateVal;
+        
+        const startTimeVal = tt.start_time ? tt.start_time.substring(0, 5) : '09:00';
+        const endTimeVal = tt.end_time ? tt.end_time.substring(0, 5) : '12:00';
+        document.getElementById('dash-edit-start').value = startTimeVal;
+        document.getElementById('dash-edit-end').value = endTimeVal;
+
+        document.getElementById('dash-edit-venue').value = tt.venue;
+        document.getElementById('dash-edit-capacity').value = tt.seating_capacity;
+
+        if (tt.status === 'published') {
+            document.getElementById('dash-edit-status-published').checked = true;
+        } else {
+            document.getElementById('dash-edit-status-draft').checked = true;
+        }
+
+        document.getElementById('dashEditTimetableModal').classList.remove('hidden');
+    }
+
+    function closeDashboardEditTimetableModal() {
+        document.getElementById('dashEditTimetableModal').classList.add('hidden');
+    }
+
     // Close modals on Escape key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeAddCourseModal();
             closeEditCourseModal();
             closeRejectSupplementaryModal();
+            closeDashboardScheduleModal();
+            closeDashboardEditTimetableModal();
         }
     });
 </script>
+
+<!-- Dashboard Schedule Timetable Modal -->
+<div id="dashScheduleModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+                <h3 class="text-xl font-bold text-slate-900">Schedule Examination Paper</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Construct timetable slot and allocate venue for students.</p>
+            </div>
+            <button type="button" onclick="closeDashboardScheduleModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form method="POST" action="{{ route('chief-examiner.timetables.store') }}" class="space-y-4 mt-5">
+            @csrf
+            <div>
+                <label for="dash-sched-course" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Course Paper *</label>
+                <select id="dash-sched-course" name="course_id" required class="w-full text-xs font-semibold px-4 py-3 rounded-xl border border-slate-300 text-slate-900 focus:ring-2 focus:ring-brand-500 bg-white">
+                    <option value="">-- Select Examination Course --</option>
+                    @foreach($courses as $c)
+                        <option value="{{ $c->id }}">
+                            [{{ $c->course_code }}] {{ $c->course_name }} ({{ $c->credit_hours ?? 3 }} Credits)
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label for="dash-sched-year" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Academic Year *</label>
+                    <input id="dash-sched-year" type="text" name="academic_year" value="2026/2027" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-sched-semester" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Exam Session *</label>
+                    <input id="dash-sched-semester" type="text" name="semester" value="Supplementary & Resit Session" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label for="dash-sched-date" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Exam Date *</label>
+                    <input id="dash-sched-date" type="date" name="exam_date" value="{{ now()->addDays(10)->format('Y-m-d') }}" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-sched-start" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Start Time *</label>
+                    <input id="dash-sched-start" type="time" name="start_time" value="09:00" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-sched-end" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">End Time *</label>
+                    <input id="dash-sched-end" type="time" name="end_time" value="12:00" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                    <label for="dash-sched-venue" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Venue / Hall *</label>
+                    <input id="dash-sched-venue" type="text" name="venue" list="dash-venue-list" value="ICT Lab 1 (Main Campus)" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                    <datalist id="dash-venue-list">
+                        <option value="ICT Lab 1 (Main Campus)">
+                        <option value="ICT Lab 2 (Main Campus)">
+                        <option value="Great Hall Room A">
+                        <option value="Great Hall Room B">
+                        <option value="Assembly Pavilion Lecture Hall">
+                        <option value="Engineering Block Lab 3">
+                        <option value="Science Complex Hall 2">
+                    </datalist>
+                </div>
+                <div>
+                    <label for="dash-sched-cap" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Capacity *</label>
+                    <input id="dash-sched-cap" type="number" name="seating_capacity" value="50" min="1" max="2000" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Publishing Status *</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-brand-300">
+                        <input type="radio" name="status" value="published" checked class="text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs font-bold text-emerald-800">Publish Immediately</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-brand-300">
+                        <input type="radio" name="status" value="draft" class="text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs font-medium text-slate-600">Save as Draft</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-3">
+                <button type="button" onclick="closeDashboardScheduleModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition">
+                    Save Timetable Entry
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Dashboard Edit Timetable Modal -->
+<div id="dashEditTimetableModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+                <h3 class="text-xl font-bold text-slate-900">Edit Examination Timetable Paper</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Update date, time window, venue or publication state.</p>
+            </div>
+            <button type="button" onclick="closeDashboardEditTimetableModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="dashEditTimetableForm" method="POST" action="" class="space-y-4 mt-5">
+            @csrf
+            @method('PUT')
+            <div>
+                <label for="dash-edit-course-id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Course Paper *</label>
+                <select id="dash-edit-course-id" name="course_id" required class="w-full text-xs font-semibold px-4 py-3 rounded-xl border border-slate-300 text-slate-900 focus:ring-2 focus:ring-brand-500 bg-white">
+                    @foreach($courses as $c)
+                        <option value="{{ $c->id }}">
+                            [{{ $c->course_code }}] {{ $c->course_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label for="dash-edit-year" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Academic Year *</label>
+                    <input id="dash-edit-year" type="text" name="academic_year" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-edit-semester" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Exam Session *</label>
+                    <input id="dash-edit-semester" type="text" name="semester" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label for="dash-edit-date" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Exam Date *</label>
+                    <input id="dash-edit-date" type="date" name="exam_date" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-edit-start" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Start Time *</label>
+                    <input id="dash-edit-start" type="time" name="start_time" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-edit-end" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">End Time *</label>
+                    <input id="dash-edit-end" type="time" name="end_time" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                    <label for="dash-edit-venue" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Venue / Hall *</label>
+                    <input id="dash-edit-venue" type="text" name="venue" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label for="dash-edit-capacity" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Capacity *</label>
+                    <input id="dash-edit-capacity" type="number" name="seating_capacity" min="1" max="2000" required class="w-full text-xs px-4 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Publishing Status *</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer">
+                        <input id="dash-edit-status-published" type="radio" name="status" value="published" class="text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs font-bold text-emerald-800">Published (Live to Students)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer">
+                        <input id="dash-edit-status-draft" type="radio" name="status" value="draft" class="text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs font-medium text-slate-600">Draft (Hidden)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-3">
+                <button type="button" onclick="closeDashboardEditTimetableModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition">
+                    Update Timetable Slot
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

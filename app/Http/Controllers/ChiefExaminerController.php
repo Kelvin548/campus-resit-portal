@@ -64,8 +64,8 @@ class ChiefExaminerController extends Controller
         // 6. Course catalogue - all courses with active courses first
         $courses = Course::orderBy('is_active', 'desc')->orderBy('course_code')->get();
 
-        // 7. Timetables
-        $timetables = Timetable::with('course')->latest()->take(10)->get();
+        // 7. Timetables (chronological master schedule)
+        $timetables = Timetable::with('course')->orderBy('exam_date')->orderBy('start_time')->get();
 
         // 8. Active and recent broadcast notices
         $broadcasts = BroadcastMessage::latest('id')->take(15)->get();
@@ -356,5 +356,179 @@ class ChiefExaminerController extends Controller
 
         $statusLabel = $newOpen ? 'Available (Open)' : 'Unavailable (Closed)';
         return back()->with('success', "System registration window is now set to: {$statusLabel}.");
+    }
+
+    /**
+     * Display the Examination Timetable master scheduler.
+     */
+    public function timetablesIndex(Request $request): View
+    {
+        $courses = Course::where('is_active', true)->orderBy('course_code')->get();
+
+        $query = Timetable::with(['course', 'publishedBy']);
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->input('search') . '%';
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('course', function ($sub) use ($search) {
+                    $sub->where('course_code', 'like', $search)
+                        ->orWhere('course_name', 'like', $search);
+                })
+                ->orWhere('venue', 'like', $search)
+                ->orWhere('academic_year', 'like', $search)
+                ->orWhere('semester', 'like', $search);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $timetables = $query->orderBy('exam_date')
+            ->orderBy('start_time')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('chief-examiner.timetables', [
+            'timetables' => $timetables,
+            'courses' => $courses,
+            'search' => $request->input('search'),
+            'statusFilter' => $request->input('status'),
+            'publishedCount' => Timetable::where('status', Timetable::STATUS_PUBLISHED)->count(),
+            'draftCount' => Timetable::where('status', Timetable::STATUS_DRAFT)->count(),
+            'distinctVenuesCount' => Timetable::distinct('venue')->count('venue'),
+        ]);
+    }
+
+    /**
+     * Store and optionally publish a newly constructed examination timetable paper.
+     */
+    public function storeTimetable(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'course_id' => ['required', 'exists:courses,id'],
+            'academic_year' => ['required', 'string', 'max:50'],
+            'semester' => ['required', 'string', 'max:100'],
+            'exam_date' => ['required', 'date'],
+            'start_time' => ['required'],
+            'end_time' => ['required', 'after:start_time'],
+            'venue' => ['required', 'string', 'max:255'],
+            'seating_capacity' => ['required', 'integer', 'min:1', 'max:2000'],
+            'status' => ['required', 'in:draft,published'],
+        ]);
+
+        // Clash Detection: Check if another exam is scheduled at the same venue and date with overlapping time
+        $clash = Timetable::with('course')
+            ->conflicting($validated['venue'], $validated['exam_date'], $validated['start_time'], $validated['end_time'])
+            ->first();
+
+        if ($clash) {
+            $clashCourse = $clash->course ? "{$clash->course->course_code} - {$clash->course->course_name}" : 'Another course';
+            return back()
+                ->withInput()
+                ->with('error', "Venue Scheduling Clash! '{$validated['venue']}' is already booked on {$validated['exam_date']} from " . \Carbon\Carbon::parse($clash->start_time)->format('h:i A') . " to " . \Carbon\Carbon::parse($clash->end_time)->format('h:i A') . " for {$clashCourse}. Please choose another venue or different time.");
+        }
+
+        $timetable = Timetable::create([
+            'course_id' => $validated['course_id'],
+            'academic_year' => $validated['academic_year'],
+            'semester' => $validated['semester'],
+            'exam_date' => $validated['exam_date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'venue' => $validated['venue'],
+            'seating_capacity' => $validated['seating_capacity'],
+            'status' => $validated['status'],
+            'published_by' => auth()->id(),
+            'published_at' => $validated['status'] === Timetable::STATUS_PUBLISHED ? now() : null,
+        ]);
+
+        $course = Course::find($validated['course_id']);
+        $publishedMsg = $validated['status'] === Timetable::STATUS_PUBLISHED ? 'and published to students' : 'saved as draft';
+
+        return back()->with('status', "Timetable for {$course->course_code} successfully scheduled {$publishedMsg}!");
+    }
+
+    /**
+     * Update an existing examination timetable slot.
+     */
+    public function updateTimetable(Request $request, Timetable $timetable): RedirectResponse
+    {
+        $validated = $request->validate([
+            'course_id' => ['required', 'exists:courses,id'],
+            'academic_year' => ['required', 'string', 'max:50'],
+            'semester' => ['required', 'string', 'max:100'],
+            'exam_date' => ['required', 'date'],
+            'start_time' => ['required'],
+            'end_time' => ['required', 'after:start_time'],
+            'venue' => ['required', 'string', 'max:255'],
+            'seating_capacity' => ['required', 'integer', 'min:1', 'max:2000'],
+            'status' => ['required', 'in:draft,published'],
+        ]);
+
+        // Clash Detection: Check if another exam is scheduled at the same venue and date excluding current slot
+        $clash = Timetable::with('course')
+            ->conflicting($validated['venue'], $validated['exam_date'], $validated['start_time'], $validated['end_time'], $timetable->id)
+            ->first();
+
+        if ($clash) {
+            $clashCourse = $clash->course ? "{$clash->course->course_code} - {$clash->course->course_name}" : 'Another course';
+            return back()
+                ->withInput()
+                ->with('error', "Venue Scheduling Clash! '{$validated['venue']}' is already booked on {$validated['exam_date']} from " . \Carbon\Carbon::parse($clash->start_time)->format('h:i A') . " to " . \Carbon\Carbon::parse($clash->end_time)->format('h:i A') . " for {$clashCourse}.");
+        }
+
+        $wasPublished = $timetable->isPublished();
+        $isNowPublished = $validated['status'] === Timetable::STATUS_PUBLISHED;
+
+        $timetable->update([
+            'course_id' => $validated['course_id'],
+            'academic_year' => $validated['academic_year'],
+            'semester' => $validated['semester'],
+            'exam_date' => $validated['exam_date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'venue' => $validated['venue'],
+            'seating_capacity' => $validated['seating_capacity'],
+            'status' => $validated['status'],
+            'published_by' => auth()->id(),
+            'published_at' => $isNowPublished ? ($wasPublished ? $timetable->published_at : now()) : null,
+        ]);
+
+        return back()->with('status', "Timetable for {$timetable->course->course_code} successfully updated!");
+    }
+
+    /**
+     * Toggle timetable publication status between draft and published.
+     */
+    public function toggleTimetableStatus(Timetable $timetable): RedirectResponse
+    {
+        if ($timetable->status === Timetable::STATUS_PUBLISHED) {
+            $timetable->update([
+                'status' => Timetable::STATUS_DRAFT,
+                'published_at' => null,
+            ]);
+            $msg = "Timetable for {$timetable->course->course_code} moved to draft (hidden from students).";
+        } else {
+            $timetable->update([
+                'status' => Timetable::STATUS_PUBLISHED,
+                'published_by' => auth()->id(),
+                'published_at' => now(),
+            ]);
+            $msg = "Timetable for {$timetable->course->course_code} is now published and visible to students!";
+        }
+
+        return back()->with('status', $msg);
+    }
+
+    /**
+     * Delete an examination timetable entry.
+     */
+    public function destroyTimetable(Timetable $timetable): RedirectResponse
+    {
+        $code = $timetable->course->course_code ?? 'Course';
+        $timetable->delete();
+
+        return back()->with('status', "Timetable paper for {$code} deleted successfully.");
     }
 }

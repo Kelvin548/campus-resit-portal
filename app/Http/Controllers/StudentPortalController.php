@@ -296,23 +296,28 @@ class StudentPortalController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $registeredCourseIds = Registration::where('user_id', $user->id)
+        $regCourseIds = Registration::where('user_id', $user->id)
             ->pluck('course_id')
             ->toArray();
+        $resitCourseIds = ResitRequest::where('user_id', $user->id)
+            ->pluck('course_id')
+            ->filter()
+            ->toArray();
+        $registeredCourseIds = array_unique(array_merge($regCourseIds, $resitCourseIds));
 
         $query = Timetable::with(['course', 'publishedBy'])
             ->where('status', Timetable::STATUS_PUBLISHED);
 
-        if (! SupplementaryCycle::registrationIsOpenNow()) {
-            $query->whereIn('course_id', $registeredCourseIds);
-        }
-
         if ($request->filled('search')) {
             $search = '%' . $request->input('search') . '%';
-            $query->whereHas('course', function ($q) use ($search) {
-                $q->where('course_code', 'like', $search)
-                    ->orWhere('course_name', 'like', $search);
-            })->orWhere('venue', 'like', $search);
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('course', function ($sub) use ($search) {
+                    $sub->where('course_code', 'like', $search)
+                        ->orWhere('course_name', 'like', $search);
+                })
+                ->orWhere('venue', 'like', $search)
+                ->orWhere('academic_year', 'like', $search);
+            });
         }
 
         $timetables = $query->orderBy('exam_date')
