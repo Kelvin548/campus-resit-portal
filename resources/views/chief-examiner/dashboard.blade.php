@@ -10,7 +10,7 @@
                 <span class="w-2.5 h-2.5 rounded-full {{ $registrationOpen ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400' }}"></span>
                 Global Application Window: {{ $registrationOpen ? 'OPEN & Active' : 'CLOSED & Unavailable' }}
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Chief Examination Officer Academic Hub</h1>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Chief Examination Officer</h1>
             <p class="text-brand-100 text-sm mt-1 max-w-xl">
                 {{ auth()->user()->full_name }} • Manage curriculum courses, broadcast announcements, review student payments, and grant examination approvals.
             </p>
