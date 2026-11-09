@@ -54,8 +54,8 @@
         <!-- Receipt Header — ONLY CHANGE: wine CR box replaced with USTED logo -->
         <div class="border-b border-slate-200 pb-6 mb-6">
             <div class="flex items-center gap-3 mb-2">
-                <div class="w-12 h-12 rounded-xl bg-white border-2 border-brand-700 flex items-center justify-center shrink-0 overflow-hidden p-1" style="box-shadow: 0 0 0 1px #7a1326;">
-                    <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED" class="w-full h-full object-contain" style="mix-blend-mode: multiply;">
+                <div class="shrink-0">
+                    <img src="{{ asset('images/usted-logo.jpg') }}" alt="USTED" class="h-16 w-auto object-contain" style="mix-blend-mode: multiply;">
                 </div>
                 <div>
                     <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">CAMPUS RESIT EXAMINATION PORTAL</h1>
