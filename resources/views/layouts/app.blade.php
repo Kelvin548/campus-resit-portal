@@ -95,20 +95,28 @@
             0%   { background-position: 0% center; }
             100% { background-position: 200% center; }
         }
-        /* Active nav link underline indicator */
-        header nav a[class*="bg-brand-50"] {
+        /* Active nav link — wine underline ONLY on selected tab */
+        header nav a {
             position: relative;
         }
-        header nav a[class*="bg-brand-50"]::after {
+        header nav a::after {
             content: '';
             position: absolute;
             bottom: -2px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60%;
+            width: 0%;
             height: 2px;
             background: #7a1326;
             border-radius: 2px 2px 0 0;
+            transition: width 0.2s ease;
+        }
+        header nav a[class*="bg-brand-50"]::after {
+            width: 60%;
+        }
+        /* Inactive tabs must never show the underline */
+        header nav a:not([class*="bg-brand-50"])::after {
+            display: none !important;
         }
         /* Navbar link hover lift effect */
         header nav a {
