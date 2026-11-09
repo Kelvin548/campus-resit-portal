@@ -159,40 +159,37 @@
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center gap-3">
                         <img src="{{ asset('images/usted-logo.png') }}" alt="USTED Logo" class="h-11 w-auto object-contain">
-                        <a href="{{ auth()->check() ? ($isStaffUser ? route('chief-examiner.dashboard') : route('student.dashboard')) : (request()->routeIs('staff.*') ? route('staff.login') : route('login')) }}" class="flex flex-col">
+                        <a href="{{ auth()->check() ? ($isStaffUser ? (auth()->user()->isAdmin() ? route('admin.dashboard') : route('chief-examiner.dashboard')) : route('student.dashboard')) : (request()->routeIs('staff.*') ? route('staff.login') : route('login')) }}" class="flex flex-col">
                             <span class="font-extrabold text-base sm:text-lg text-brand-600 leading-tight tracking-tight uppercase">USTED</span>
                             <span class="text-xs text-slate-500 font-medium hidden sm:inline">Campus Resit & Supplementary Portal</span>
                         </a>
                     </div>
                     @auth
-                    @if(!$isStaffUser)
+                    @if(auth()->user()->isAdmin())
                     <nav class="hidden sm:ml-8 sm:flex sm:space-x-2 items-center">
-                        <a href="{{ route('student.dashboard') }}" 
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.dashboard') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            Dashboard
-                        </a>
-                        <a href="{{ route('student.registration') }}"
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.registration') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            Registration
-                        </a>
-                        <a href="{{ route('student.timetable') }}" 
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.timetable') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            Exam Timetable
-                        </a>
-                        <a href="{{ route('student.announcements') }}" 
-                           class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 {{ request()->routeIs('student.announcements') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        <a href="{{ route('admin.dashboard') }}" 
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('admin.dashboard') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('admin.dashboard') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                             </svg>
-                            <span>Notices &amp; Updates</span>
-                            @if($activeBroadcastCount > 0)
-                                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-600 text-white">
-                                    {{ $activeBroadcastCount }}
-                                </span>
-                            @endif
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{{ route('admin.students.index') }}" 
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('admin.students.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('admin.students.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span>Students</span>
+                        </a>
+                        <a href="{{ route('admin.staff-invitations.create') }}" 
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('admin.staff-invitations.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('admin.staff-invitations.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                            </svg>
+                            <span>Create Invitation</span>
                         </a>
                     </nav>
-                    @else
+                    @elseif(auth()->user()->isChiefExaminer())
                     <nav class="hidden sm:ml-8 sm:flex sm:space-x-2 items-center">
                         <a href="{{ route('chief-examiner.dashboard') }}" 
                            class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('chief-examiner.dashboard') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
@@ -228,6 +225,33 @@
                             <span>Cycle Settings</span>
                         </a>
                     </nav>
+                    @else
+                    <nav class="hidden sm:ml-8 sm:flex sm:space-x-2 items-center">
+                        <a href="{{ route('student.dashboard') }}" 
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.dashboard') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('student.registration') }}"
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.registration') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            Registration
+                        </a>
+                        <a href="{{ route('student.timetable') }}" 
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.timetable') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            Exam Timetable
+                        </a>
+                        <a href="{{ route('student.announcements') }}" 
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 {{ request()->routeIs('student.announcements') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span>Notices &amp; Updates</span>
+                            @if($activeBroadcastCount > 0)
+                                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-600 text-white">
+                                    {{ $activeBroadcastCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </nav>
                     @endif
                     @endauth
                 </div>
@@ -238,7 +262,7 @@
                         <div class="text-right hidden sm:block">
                             <div class="text-sm font-semibold text-slate-900">{{ Auth::user()->full_name }}</div>
                             <div class="text-xs text-slate-500 font-medium">
-                                {{ Auth::user()->isChiefExaminer() || Auth::user()->isAdmin() ? 'Chief Examination Officer' : 'Student • ' . (Auth::user()->student_id_number ?? 'ID N/A') }}
+                                {{ Auth::user()->isAdmin() ? 'Administrator' : (Auth::user()->isChiefExaminer() ? 'Chief Examination Officer' : 'Student • ' . (Auth::user()->student_id_number ?? 'ID N/A')) }}
                             </div>
                         </div>
 

@@ -80,10 +80,10 @@
                             Notice Category *
                         </label>
                         <select name="category" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-brand-600 focus:border-brand-600">
-                            <option value="general">📢 General Announcement</option>
-                            <option value="postponement">⚠️ Postponement / Reschedule Notice</option>
-                            <option value="exam_time">⏰ Exam Sitting Time Notice</option>
-                            <option value="urgent">🚨 Urgent Academic Alert</option>
+                            <option value="general">General Announcement</option>
+                            <option value="postponement">Postponement / Reschedule Notice</option>
+                            <option value="exam_time">Exam Sitting Time Notice</option>
+                            <option value="urgent">Urgent Academic Alert</option>
                         </select>
                     </div>
                 </div>
@@ -159,13 +159,13 @@
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
                                 @if($bc->category === 'postponement')
-                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">⚠️ Postponement</span>
+                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Postponement</span>
                                 @elseif($bc->category === 'urgent')
-                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">🚨 Urgent Alert</span>
+                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Urgent Alert</span>
                                 @elseif($bc->category === 'exam_time')
-                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">⏰ Sitting Time</span>
+                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">Sitting Time</span>
                                 @else
-                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-50 text-brand-800 border border-brand-200">📢 General</span>
+                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-brand-50 text-brand-800 border border-brand-200">General</span>
                                 @endif
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap font-mono text-emerald-700 font-bold text-xs">

@@ -67,11 +67,11 @@
                             Official Chief Examiner Announcement
                         </span>
                         @if($announcement->category === 'postponement')
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">⚠️ Postponement</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Postponement</span>
                         @elseif($announcement->category === 'urgent')
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">🚨 Urgent</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Urgent</span>
                         @elseif($announcement->category === 'exam_time')
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">⏰ Sitting Time</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Sitting Time</span>
                         @endif
                     </div>
                     <div class="text-[11px] text-slate-500">

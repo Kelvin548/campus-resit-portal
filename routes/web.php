@@ -34,6 +34,8 @@ Route::post('/staff/invitation/complete', [AuthController::class, 'completeStaff
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/students', [AdminController::class, 'students'])->name('students.index');
+    Route::get('/staff-invitations/create', [AuthController::class, 'showStaffInvitationForm'])->name('staff-invitations.create');
+    Route::post('/staff-invitations', [AuthController::class, 'sendStaffInvitation'])->name('staff-invitations.store')->middleware('throttle:10,1');
 });
 
 Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->name('chief-examiner.')->group(function () {
