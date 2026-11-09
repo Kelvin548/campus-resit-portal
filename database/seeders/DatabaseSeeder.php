@@ -28,13 +28,13 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Keep system administrator account aligned with Chief Examiner permissions
+        // Keep system administrator account with correct admin role (Felicia's admin panel)
         User::updateOrCreate(
             ['email' => 'admin@campus.edu'],
             [
                 'full_name' => 'System Administrator (Academic Affairs)',
                 'password' => Hash::make('password123'),
-                'role' => 'chief_examiner',
+                'role' => 'admin',
                 'phone_number' => '+233240000001',
             ]
         );

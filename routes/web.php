@@ -30,14 +30,10 @@ Route::post('/staff/invitation/verify', [AuthController::class, 'verifyStaffInvi
 Route::post('/staff/invitation/complete', [AuthController::class, 'completeStaffInvitation'])->name('staff.invitation.complete')->middleware(['guest', 'throttle:6,1']);
 
 
-// Role-protected Chief Examiner workspace (Simplified User Roles: Chief Examiner & Students)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect()->route('chief-examiner.dashboard');
-    })->name('dashboard');
-    Route::get('/students', function () {
-        return redirect()->route('chief-examiner.dashboard');
-    })->name('students.index');
+// Role-protected Administrator workspace (Felicia's admin panel)
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/students', [AdminController::class, 'students'])->name('students.index');
 });
 
 Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->name('chief-examiner.')->group(function () {
