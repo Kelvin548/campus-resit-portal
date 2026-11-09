@@ -245,6 +245,7 @@ All 9 migrations have been successfully migrated (`Batch 1 Ran`) in the local My
 | 2026-11-08 | `resources/views/chief-examiner/dashboard.blade.php` | Modified | Line 13 | Simplified main banner title to 'Chief Examination Officer' by removing 'Academic Hub'. |
 | 2026-11-08 | `ChiefExaminerController`, `resources/views/chief-examiner/timetables.blade.php`, `chief-examiner/dashboard.blade.php`, `layouts/app.blade.php`, `routes/web.php` | Created / Modified | Multiple | Built Chief Examination Officer Timetable Builder & Master Schedule with clash detection, venue allocation, one-click publishing, edit/delete actions, and instant student view integration. |
 | 2026-11-08 | `app/Http/Controllers/StudentPortalController.php` & `tests/Feature/StudentPortalTest.php` | Modified | Lines 299–320 | Fixed student timetable QueryException by correctly reading registered course IDs from `registrations` and parsing `course_entries` JSON from `resit_requests`. |
+| 2026-11-09 | `resources/views/chief-examiner/dashboard.blade.php` & `tests/Feature/ChiefExaminerAndStudentWorkflowTest.php` | Modified | Lines 350–445, 980–1110 | Added real-time instant search by course code and name in Course Management; enforced 15-course initial limit with 'View All' toggle button; verified via automated feature test. |
 
 ---
 

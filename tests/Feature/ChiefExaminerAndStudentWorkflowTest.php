@@ -456,4 +456,15 @@ class ChiefExaminerAndStudentWorkflowTest extends TestCase
             'venue' => 'ICT Lab 1 (Main Campus)',
         ]);
     }
+
+    public function test_chief_examiner_courses_management_has_search_and_overflow_controls(): void
+    {
+        $dashboardResponse = $this->actingAs($this->chiefExaminer)->get(route('chief-examiner.dashboard'));
+        $dashboardResponse->assertOk();
+        $dashboardResponse->assertSee('id="courseSearchInput"', false);
+        $dashboardResponse->assertSee('id="courseCountBadge"', false);
+        $dashboardResponse->assertSee('id="toggleViewAllCoursesBtnBottom"', false);
+        $dashboardResponse->assertSee('View All 32 Courses');
+        $dashboardResponse->assertSee('course-row-overflow hidden', false);
+    }
 }

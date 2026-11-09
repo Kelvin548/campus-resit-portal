@@ -348,7 +348,7 @@
     </div>
 
     <!-- COURSE MANAGEMENT SECTION (Level & Semester removed as requested) -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+    <div id="courses-section" class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-1">
@@ -362,12 +362,55 @@
             <div class="flex items-center gap-3">
                 <button type="button" 
                         onclick="openAddCourseModal()"
-                        class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 hover:from-brand-950 hover:to-brand-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-2">
+                        class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 hover:from-brand-950 hover:to-brand-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-2 whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>Add New Course</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Course Search & Controls Bar -->
+        <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="relative flex-1 max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" 
+                       id="courseSearchInput" 
+                       oninput="filterCoursesTable()"
+                       placeholder="Search by course code or course name (e.g. AI201, Database)..."
+                       class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-xs transition">
+                <button type="button" 
+                        id="courseSearchClearBtn" 
+                        onclick="clearCourseSearch()" 
+                        class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition"
+                        title="Clear search">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3 text-xs text-slate-500 justify-between md:justify-end">
+                <span id="courseCountBadge" class="font-semibold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs">
+                    Showing {{ min(15, $courses->count()) }} of {{ $courses->count() }} courses
+                </span>
+
+                @if($courses->count() > 15)
+                <button type="button" 
+                        id="toggleViewAllCoursesBtnTop"
+                        onclick="toggleViewAllCourses()"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200/80 transition">
+                    <span id="toggleViewAllTextTop">View All ({{ $courses->count() }})</span>
+                    <svg id="toggleViewAllIconTop" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                @endif
             </div>
         </div>
 
@@ -382,9 +425,12 @@
                         <th class="py-3 px-6 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody id="coursesTableBody" class="divide-y divide-slate-100">
                     @forelse($courses as $course)
-                    <tr class="hover:bg-slate-50/70 transition">
+                    <tr class="course-table-row hover:bg-slate-50/70 transition {{ $loop->index >= 15 ? 'course-row-overflow hidden' : '' }}"
+                        data-code="{{ strtolower($course->course_code) }}"
+                        data-name="{{ strtolower($course->course_name) }}"
+                        data-index="{{ $loop->index }}">
                         <td class="py-3.5 px-6">
                             <div class="font-bold text-slate-900 flex items-center gap-2">
                                 <span class="font-mono px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold">
@@ -438,9 +484,41 @@
                         </td>
                     </tr>
                     @endforelse
+
+                    <tr id="courseSearchNoResults" class="hidden">
+                        <td colspan="5" class="py-10 text-center">
+                            <div class="max-w-xs mx-auto text-slate-500 space-y-2">
+                                <svg class="w-8 h-8 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <p class="text-sm font-semibold text-slate-700">No matching courses found</p>
+                                <p class="text-xs text-slate-400">No course code or name matched your search query.</p>
+                                <button type="button" onclick="clearCourseSearch()" class="mt-2 px-3 py-1.5 text-xs font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 rounded-lg border border-brand-200 transition">
+                                    Clear search query
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        @if($courses->count() > 15)
+        <div id="courseOverflowFooter" class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+            <div>
+                <span id="courseFooterStatusText">Showing first 15 courses. {{ $courses->count() - 15 }} more courses available.</span>
+            </div>
+            <button type="button" 
+                    id="toggleViewAllCoursesBtnBottom"
+                    onclick="toggleViewAllCourses()"
+                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-xs transition">
+                <span id="toggleViewAllTextBottom">View All {{ $courses->count() }} Courses</span>
+                <svg id="toggleViewAllIconBottom" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+        @endif
     </div>
 
     <!-- TIMETABLE BUILDER SECTION (Construct, Insert & Publish Examination Timetables) -->
@@ -898,6 +976,132 @@
 
     function closeAddCourseModal() {
         document.getElementById('addCourseModal').classList.add('hidden');
+    }
+
+    // Course Search & 15-Item Overflow Management
+    let coursesAreExpanded = false;
+    const totalCourseCount = {{ $courses->count() }};
+    const courseInitialLimit = 15;
+
+    function filterCoursesTable() {
+        const input = document.getElementById('courseSearchInput');
+        const clearBtn = document.getElementById('courseSearchClearBtn');
+        const query = input ? input.value.trim().toLowerCase() : '';
+        const rows = document.querySelectorAll('.course-table-row');
+        const noResultsRow = document.getElementById('courseSearchNoResults');
+        const badge = document.getElementById('courseCountBadge');
+        const overflowFooter = document.getElementById('courseOverflowFooter');
+        const topToggleBtn = document.getElementById('toggleViewAllCoursesBtnTop');
+
+        if (clearBtn) {
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        let matchCount = 0;
+
+        if (query.length > 0) {
+            // Search mode: match against code and name across ALL courses
+            rows.forEach(function(row) {
+                const code = row.getAttribute('data-code') || '';
+                const name = row.getAttribute('data-name') || '';
+                if (code.indexOf(query) !== -1 || name.indexOf(query) !== -1) {
+                    row.classList.remove('hidden');
+                    matchCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            if (badge) {
+                badge.textContent = `Found ${matchCount} matching ${matchCount === 1 ? 'course' : 'courses'}`;
+            }
+
+            if (overflowFooter) overflowFooter.classList.add('hidden');
+            if (topToggleBtn) topToggleBtn.classList.add('hidden');
+        } else {
+            // Non-search mode: respect the 15-item limit unless expanded
+            rows.forEach(function(row, idx) {
+                if (coursesAreExpanded || idx < courseInitialLimit) {
+                    row.classList.remove('hidden');
+                    matchCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            if (badge) {
+                badge.textContent = coursesAreExpanded 
+                    ? `Showing all ${totalCourseCount} courses` 
+                    : `Showing ${Math.min(courseInitialLimit, totalCourseCount)} of ${totalCourseCount} courses`;
+            }
+
+            if (overflowFooter) overflowFooter.classList.remove('hidden');
+            if (topToggleBtn) topToggleBtn.classList.remove('hidden');
+        }
+
+        if (noResultsRow) {
+            if (query.length > 0 && matchCount === 0) {
+                noResultsRow.classList.remove('hidden');
+            } else {
+                noResultsRow.classList.add('hidden');
+            }
+        }
+    }
+
+    function clearCourseSearch() {
+        const input = document.getElementById('courseSearchInput');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        filterCoursesTable();
+    }
+
+    function toggleViewAllCourses() {
+        coursesAreExpanded = !coursesAreExpanded;
+        const overflowRows = document.querySelectorAll('.course-row-overflow');
+        const textTop = document.getElementById('toggleViewAllTextTop');
+        const iconTop = document.getElementById('toggleViewAllIconTop');
+        const textBottom = document.getElementById('toggleViewAllTextBottom');
+        const iconBottom = document.getElementById('toggleViewAllIconBottom');
+        const footerStatusText = document.getElementById('courseFooterStatusText');
+        const badge = document.getElementById('courseCountBadge');
+
+        if (coursesAreExpanded) {
+            overflowRows.forEach(function(row) {
+                row.classList.remove('hidden');
+            });
+            if (textTop) textTop.textContent = 'Show Less (First 15)';
+            if (iconTop) iconTop.style.transform = 'rotate(180deg)';
+            if (textBottom) textBottom.textContent = 'Show Less (First 15 Courses)';
+            if (iconBottom) iconBottom.style.transform = 'rotate(180deg)';
+            if (footerStatusText) footerStatusText.textContent = `All ${totalCourseCount} courses are currently displayed.`;
+            if (badge) badge.textContent = `Showing all ${totalCourseCount} courses`;
+        } else {
+            overflowRows.forEach(function(row) {
+                row.classList.add('hidden');
+            });
+            if (textTop) textTop.textContent = `View All (${totalCourseCount})`;
+            if (iconTop) iconTop.style.transform = 'rotate(0deg)';
+            if (textBottom) textBottom.textContent = `View All ${totalCourseCount} Courses`;
+            if (iconBottom) iconBottom.style.transform = 'rotate(0deg)';
+            if (footerStatusText) footerStatusText.textContent = `Showing first 15 courses. ${totalCourseCount - courseInitialLimit} more courses available.`;
+            if (badge) badge.textContent = `Showing ${Math.min(courseInitialLimit, totalCourseCount)} of ${totalCourseCount} courses`;
+
+            const section = document.getElementById('courses-section');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        const input = document.getElementById('courseSearchInput');
+        if (input && input.value.trim().length > 0) {
+            filterCoursesTable();
+        }
     }
 
     function openEditCourseModal(course) {
