@@ -111,12 +111,6 @@
                         </div>
                     </div>
 
-                    {{-- Password Reset Assistance Notice (hidden by default) --}}
-                    <div id="forgot-password-box" class="hidden rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-600">
-                        <p class="font-semibold text-slate-800 mb-1">Need Password Assistance?</p>
-                        <p>Please contact the University ICT Directorate or Academic Affairs Examination Office with your student ID card to request a secure password reset.</p>
-                    </div>
-
                     <div class="flex items-center justify-between pt-1">
                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
                             <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
@@ -151,7 +145,7 @@
                             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
-                            <span>Chief Examiner &amp; Staff Sign In &rarr;</span>
+                            <span>Administrator &amp; Chief Examiner Sign In &rarr;</span>
                         </a>
                     </div>
                 </div>
@@ -167,10 +161,4 @@
     </div>
 </div>
 
-<script>
-    function toggleForgotPasswordNotice() {
-        const box = document.getElementById('forgot-password-box');
-        box.classList.toggle('hidden');
-    }
-</script>
 @endsection

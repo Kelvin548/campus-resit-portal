@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset Request</title>
+    <title>Password Reset Code</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -91,21 +91,16 @@
         </div>
         <div class="content">
             <div class="greeting">Hello, {{ $user->full_name }}!</div>
-            <p>You recently submitted a request to reset your password for the Campus Resit & Supplementary Examination Portal.</p>
-            <p>Please tap the button below on your device to create a new password:</p>
-            
-            <div class="btn-wrapper">
-                <a href="{{ $resetUrl }}" class="btn">Reset My Password</a>
+            <p>You requested a password reset for the Campus Resit &amp; Supplementary Examination Portal.</p>
+            <p>Enter this one-time code on the portal to continue resetting your password:</p>
+
+            <div class="btn-wrapper" style="font-family:monospace;font-size:30px;font-weight:800;letter-spacing:8px;color:#881337;">
+                {{ $pin }}
             </div>
 
             <div class="note">
-                <strong>Notice:</strong> This password reset link will expire in <strong>60 minutes</strong>. If you did not request a password change, no further action is required and your account remains secure.
+                <strong>Notice:</strong> This code expires in <strong>10 minutes</strong> and can be used once. If you did not request a password reset, ignore this email; your password will remain unchanged.
             </div>
-
-            <p style="font-size: 12px; color: #64748b; word-break: break-all;">
-                If you have trouble clicking the button, copy and paste this link into your browser:<br>
-                <a href="{{ $resetUrl }}" style="color: #881337;">{{ $resetUrl }}</a>
-            </p>
         </div>
         <div class="footer">
             &copy; {{ date('Y') }} USTED Examination Directorate. All rights reserved.

@@ -57,6 +57,7 @@
                     <th class="px-6 py-3">Email address</th>
                     <th class="px-6 py-3">Index number</th>
                     <th class="px-6 py-3">Account status</th>
+                    <th class="px-6 py-3">Details</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -65,15 +66,32 @@
                         <td class="px-6 py-4 font-medium">{{ $user->full_name }}</td>
                         <td class="px-6 py-4">{{ $user->email }}</td>
                         <td class="px-6 py-4">{{ $user->student_id_number }}</td>
-                        <td class="px-6 py-4 text-slate-500">Not tracked yet</td>
+                        <td class="px-6 py-4">
+                            <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
+                                {{ $user->is_active ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button type="button" class="student-details-trigger text-sm font-semibold text-brand-600 hover:text-brand-800 hover:underline"
+                                data-student-details="{{ json_encode($user->only(['full_name', 'email', 'phone_number', 'student_id_number', 'is_active']) + ['id' => $user->id, 'status_history' => $user->accountStatusHistory->map(fn ($event) => ['old_status' => $event->previous_status === null ? null : ($event->previous_status ? 'Active' : 'Inactive'), 'new_status' => $event->new_status ? 'Active' : 'Inactive', 'actor' => $event->changedBy?->full_name ?? 'System', 'changed_at' => $event->created_at?->format('M j, Y g:i A')])]) }}">
+                                View details
+                            </button>
+                            <form id="student-status-form-{{ $user->id }}" method="POST" action="{{ url('/admin/students/'.$user->id.'/status') }}" class="hidden">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="is_active" value="{{ $user->is_active ? 0 : 1 }}">
+                            </form>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="px-6 py-4 text-slate-500">No student accounts match these search and filter choices.</td></tr>
+                    <tr><td colspan="5" class="px-6 py-4 text-slate-500">No student accounts match these search and filter choices.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
     <div>{{ $students->links('vendor.pagination.admin') }}</div>
+
+    @include('admin.partials.student-details-modal')
 </div>
 @endsection

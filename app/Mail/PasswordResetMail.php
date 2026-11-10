@@ -15,13 +15,13 @@ class PasswordResetMail extends Mailable
 
     public function __construct(
         public User $user,
-        public string $resetUrl,
+        public string $pin,
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'USTED Resit Portal - Reset Your Password',
+            subject: 'USTED Resit Portal - Your Password Reset Code',
         );
     }
 
@@ -31,7 +31,7 @@ class PasswordResetMail extends Mailable
             view: 'emails.password-reset',
             with: [
                 'user' => $this->user,
-                'resetUrl' => $this->resetUrl,
+                'pin' => $this->pin,
             ],
         );
     }

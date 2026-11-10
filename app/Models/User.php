@@ -35,6 +35,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'pending_email',
+        'email_verification_code_hash',
+        'email_verification_expires_at',
+        'email_verification_attempts',
     ];
 
     /**
@@ -46,8 +50,27 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_verification_expires_at' => 'datetime',
+            'email_verification_attempts' => 'integer',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Account activation and deactivation events for this user.
+     */
+    public function accountStatusHistory(): HasMany
+    {
+        return $this->hasMany(AccountStatusHistory::class);
+    }
+
+    /**
+     * Staff invitation accepted to create this account, when applicable.
+     */
+    public function acceptedStaffInvitation(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(StaffInvitation::class, 'accepted_user_id');
     }
 
     /**

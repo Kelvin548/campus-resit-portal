@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 use Closure;
 use Illuminate\Http\Request;
@@ -17,7 +18,19 @@ class EnsureUserHasRole
     {
         $user = $request->user();
 
-        if ($user === null || $user->role !== $role) {
+
+        if ($user !== null && ! $user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            $signInRoute = $user->isStudent() ? 'login' : 'staff.login';
+
+            return redirect()->route($signInRoute)
+                ->with('error', 'Your account is inactive. Please contact an Administrator.');
+        }
+
+         if ($user === null || $user->role !== $role) {
             abort(Response::HTTP_FORBIDDEN, 'You are not authorized to access this page.');
         }
 

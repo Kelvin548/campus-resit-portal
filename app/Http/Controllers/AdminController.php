@@ -16,7 +16,10 @@ class AdminController extends Controller
         $adminCount = User::where('role', 'admin')->count();
 
         $chiefExaminerSearch = trim($request->input('chief_examiner_search', ''));
-        $chiefExaminersQuery = User::where('role', 'chief_examiner');
+        $chiefExaminersQuery = User::with([
+            'acceptedStaffInvitation.createdBy',
+            'accountStatusHistory.changedBy',
+        ])->where('role', 'chief_examiner');
 
         if ($chiefExaminerSearch !== '') {
             $chiefExaminersQuery->where(function ($query) use ($chiefExaminerSearch) {
@@ -26,12 +29,16 @@ class AdminController extends Controller
         }
 
         $chiefExaminers = $chiefExaminersQuery
+            ->orderByDesc('is_active')
             ->orderBy('full_name')
             ->paginate(10, ['*'], 'chief_examiners_page')
             ->withQueryString();
 
         $adminSearch = trim($request->input('admin_search', ''));
-        $administratorsQuery = User::where('role', 'admin');
+        $administratorsQuery = User::with([
+            'acceptedStaffInvitation.createdBy',
+            'accountStatusHistory.changedBy',
+        ])->where('role', 'admin');
 
         if ($adminSearch !== '') {
             $administratorsQuery->where(function ($query) use ($adminSearch) {
@@ -41,6 +48,7 @@ class AdminController extends Controller
         }
 
         $administrators = $administratorsQuery
+            ->orderByDesc('is_active')
             ->orderBy('full_name')
             ->paginate(10, ['*'], 'administrators_page')
             ->withQueryString();
@@ -82,7 +90,7 @@ class AdminController extends Controller
             ->orderBy('courses.level')
             ->pluck('courses.level');
 
-        $studentsQuery = User::where('role', 'student');
+        $studentsQuery = User::with(['accountStatusHistory.changedBy'])->where('role', 'student');
 
         if ($studentSearch !== '') {
             $studentsQuery->where(function ($query) use ($studentSearch) {
@@ -111,6 +119,7 @@ class AdminController extends Controller
         }
 
         $students = $studentsQuery
+            ->orderByDesc('is_active')
             ->orderBy('full_name')
             ->paginate(10, ['*'], 'students_page')
             ->withQueryString();

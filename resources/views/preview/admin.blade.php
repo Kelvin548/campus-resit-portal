@@ -50,12 +50,25 @@
         </div>
         <div class="overflow-x-auto rounded-2xl border bg-white">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email address</th><th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th></tr></thead>
+                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email address</th><th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th><th class="px-6 py-3">Details</th></tr></thead>
                 <tbody class="divide-y">
                     @forelse ($chiefExaminers as $user)
-                        <tr><td class="px-6 py-4 font-medium">{{ $user->full_name }}</td><td class="px-6 py-4">{{ $user->email }}</td><td class="px-6 py-4">Chief Examiner</td><td class="px-6 py-4 text-slate-500">Not tracked yet</td></tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium">{{ $user->full_name }}</td>
+                            <td class="px-6 py-4">{{ $user->email }}</td>
+                            <td class="px-6 py-4">Chief Examiner</td>
+                            <td class="px-6 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</span></td>
+                            <td class="px-6 py-4">
+                                <button type="button" class="account-details-trigger text-sm font-semibold text-brand-600 hover:text-brand-800 hover:underline" data-account-details="{{ json_encode($user->only(['full_name', 'email', 'phone_number', 'role', 'is_active']) + ['id' => $user->id, 'is_self' => $user->id === auth()->id(), 'invitation' => $user->acceptedStaffInvitation ? ['issuer' => $user->acceptedStaffInvitation->createdBy?->full_name, 'issued_at' => $user->acceptedStaffInvitation->created_at?->format('M j, Y g:i A'), 'accepted_by' => $user->full_name, 'accepted_at' => $user->acceptedStaffInvitation->used_at?->format('M j, Y g:i A')] : null, 'status_history' => $user->accountStatusHistory->map(fn ($event) => ['old_status' => $event->previous_status === null ? null : ($event->previous_status ? 'Active' : 'Inactive'), 'new_status' => $event->new_status ? 'Active' : 'Inactive', 'actor' => $event->changedBy?->full_name ?? 'System', 'changed_at' => $event->created_at?->format('M j, Y g:i A')])]) }}">View details</button>
+                                <form id="staff-status-form-{{ $user->id }}" method="POST" action="{{ route('admin.staff.status', $user) }}" class="hidden">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="is_active" value="{{ $user->is_active ? 0 : 1 }}">
+                                </form>
+                            </td>
+                        </tr>
                     @empty
-                        <tr><td colspan="4" class="px-6 py-4 text-slate-500">No Chief Examiner accounts match this search.</td></tr>
+                        <tr><td colspan="5" class="px-6 py-4 text-slate-500">No Chief Examiner accounts match this search.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -81,18 +94,33 @@
         </div>
         <div class="overflow-x-auto rounded-2xl border bg-white">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email address</th><th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th></tr></thead>
+                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Email address</th><th class="px-6 py-3">Role</th><th class="px-6 py-3">Account status</th><th class="px-6 py-3">Details</th></tr></thead>
                 <tbody class="divide-y">
                     @forelse ($administrators as $user)
-                        <tr><td class="px-6 py-4 font-medium">{{ $user->full_name }}</td><td class="px-6 py-4">{{ $user->email }}</td><td class="px-6 py-4">Administrator</td><td class="px-6 py-4 text-slate-500">Not tracked yet</td></tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium">{{ $user->full_name }}</td>
+                            <td class="px-6 py-4">{{ $user->email }}</td>
+                            <td class="px-6 py-4">Administrator</td>
+                            <td class="px-6 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</span></td>
+                            <td class="px-6 py-4">
+                                <button type="button" class="account-details-trigger text-sm font-semibold text-brand-600 hover:text-brand-800 hover:underline" data-account-details="{{ json_encode($user->only(['full_name', 'email', 'phone_number', 'role', 'is_active']) + ['id' => $user->id, 'is_self' => $user->id === auth()->id(), 'invitation' => $user->acceptedStaffInvitation ? ['issuer' => $user->acceptedStaffInvitation->createdBy?->full_name, 'issued_at' => $user->acceptedStaffInvitation->created_at?->format('M j, Y g:i A'), 'accepted_by' => $user->full_name, 'accepted_at' => $user->acceptedStaffInvitation->used_at?->format('M j, Y g:i A')] : null, 'status_history' => $user->accountStatusHistory->map(fn ($event) => ['old_status' => $event->previous_status === null ? null : ($event->previous_status ? 'Active' : 'Inactive'), 'new_status' => $event->new_status ? 'Active' : 'Inactive', 'actor' => $event->changedBy?->full_name ?? 'System', 'changed_at' => $event->created_at?->format('M j, Y g:i A')])]) }}">View details</button>
+                                <form id="staff-status-form-{{ $user->id }}" method="POST" action="{{ route('admin.staff.status', $user) }}" class="hidden">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="is_active" value="{{ $user->is_active ? 0 : 1 }}">
+                                </form>
+                            </td>
+                        </tr>
                     @empty
-                        <tr><td colspan="4" class="px-6 py-4 text-slate-500">No Administrator accounts match this search.</td></tr>
+                        <tr><td colspan="5" class="px-6 py-4 text-slate-500">No Administrator accounts match this search.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
         <div class="mt-4">{{ $administrators->links('vendor.pagination.admin') }}</div>
     </section>
+
+    @include('admin.partials.account-details-modal')
 
     <!-- Help & Support Section -->
     <section class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">

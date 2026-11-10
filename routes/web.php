@@ -3,9 +3,13 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChiefExaminerController;
+use App\Http\Controllers\ChiefExaminerProfileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\SupplementaryCycleController;
+use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\AdminAccountController;
+use App\Http\Controllers\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,10 +40,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/students', [AdminController::class, 'students'])->name('students.index');
     Route::get('/staff-invitations/create', [AuthController::class, 'showStaffInvitationForm'])->name('staff-invitations.create');
     Route::post('/staff-invitations', [AuthController::class, 'sendStaffInvitation'])->name('staff-invitations.store')->middleware('throttle:10,1');
+    Route::patch('/students/{user}/status',[AdminAccountController::class, 'updateStudentStatus'])->name('update-student-status');
+    Route::patch('/staff/{user}/status', [AdminAccountController::class, 'updateStaffStatus'])->name('staff.status');
+    Route::get('/profile', [AdminAccountController::class, 'showProfile'])
+    ->name('profile.show');
+    Route::patch('/profile', [AdminAccountController::class, 'updateProfile'])
+    ->name('profile.update');
+    Route::patch('/profile/email', [AdminAccountController::class, 'requestEmailChange'])
+    ->name('profile.email.request');
+    Route::patch('/profile/email/confirm', [AdminAccountController::class, 'confirmEmailChange'])
+    ->name('profile.email.confirm');
 });
 
 Route::middleware(['auth', 'role:chief_examiner'])->prefix('chief-examiner')->name('chief-examiner.')->group(function () {
     Route::get('/dashboard', [ChiefExaminerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/profile', [ChiefExaminerProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [ChiefExaminerProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/profile/email', [ChiefExaminerProfileController::class, 'requestEmailChange'])->name('profile.email.request');
+    Route::patch('/profile/email/confirm', [ChiefExaminerProfileController::class, 'confirmEmailChange'])->name('profile.email.confirm');
     Route::post('/registrations/{registration}/approve', [ChiefExaminerController::class, 'approveRegistration'])->name('registrations.approve');
     Route::post('/registrations/{registration}/reject', [ChiefExaminerController::class, 'rejectRegistration'])->name('registrations.reject');
     Route::get('/cycle-settings', [SupplementaryCycleController::class, 'edit'])->name('cycle-settings.edit');
@@ -80,10 +98,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     // Password Reset Routes
-    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::get('/forgot-password', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetCode'])->name('password.email')->middleware('throttle:5,1');
+    Route::get('/verify-password-reset', [PasswordResetController::class, 'showVerificationForm'])->name('password.verify.form');
+    Route::post('/verify-password-reset', [PasswordResetController::class, 'verifyResetCode'])->name('password.verify')->middleware('throttle:5,1');
+    Route::get('/reset-password', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update')->middleware('throttle:10,1');
 });
 
 // Paystack Asynchronous Webhook
@@ -126,4 +146,13 @@ Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')-
     // New Resit / Supplementary Exam Form
     Route::get('/resit-form', [\App\Http\Controllers\ResitExamController::class, 'showForm'])->name('resit-form');
     Route::post('/resit-form', [\App\Http\Controllers\ResitExamController::class, 'submitForm'])->name('resit-form.submit');
+
+    // View Student Profile Page
+    Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [StudentProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/profile/email', [StudentProfileController::class, 'requestEmailChange'])
+    ->name('profile.email.request');
+
+    Route::patch('/profile/email/confirm', [StudentProfileController::class, 'confirmEmailChange'])
+        ->name('profile.email.confirm');
 });

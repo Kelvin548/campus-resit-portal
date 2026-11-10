@@ -188,6 +188,13 @@
                             </svg>
                             <span>Create Invitation</span>
                         </a>
+                        <a href="{{ route('admin.profile.show') }}"
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('admin.profile.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('admin.profile.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5.5 21a6.5 6.5 0 0113 0H5.5z"/>
+                            </svg>
+                            <span>Profile</span>
+                        </a>
                     </nav>
                     @elseif(auth()->user()->isChiefExaminer())
                     <nav class="hidden sm:ml-8 sm:flex sm:space-x-2 items-center">
@@ -224,6 +231,13 @@
                             </svg>
                             <span>Cycle Settings</span>
                         </a>
+                        <a href="{{ route('chief-examiner.profile.show') }}"
+                           class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 {{ request()->routeIs('chief-examiner.profile.*') ? 'bg-brand-50 text-brand-700 border border-brand-200/90 shadow-xs ring-1 ring-brand-100' : 'text-slate-600 hover:text-brand-700 hover:bg-brand-50/50 hover:border-brand-200/40 border border-transparent' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('chief-examiner.profile.*') ? 'text-brand-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5.5 21a6.5 6.5 0 0113 0H5.5z"/>
+                            </svg>
+                            <span>Profile</span>
+                        </a>
                     </nav>
                     @else
                     <nav class="hidden sm:ml-8 sm:flex sm:space-x-2 items-center">
@@ -251,6 +265,10 @@
                                 </span>
                             @endif
                         </a>
+                        <a href="{{ route('student.profile.show') }}"
+                           class="px-3 py-2 rounded-lg text-sm font-medium transition {{ request()->routeIs('student.profile.*') ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                            My Profile
+                        </a>
                     </nav>
                     @endif
                     @endauth
@@ -265,6 +283,24 @@
                                 {{ Auth::user()->isAdmin() ? 'Administrator' : (Auth::user()->isChiefExaminer() ? 'Chief Examination Officer' : 'Student • ' . (Auth::user()->student_id_number ?? 'ID N/A')) }}
                             </div>
                         </div>
+
+                        @if (Auth::user()->isAdmin())
+                            <a href="{{ route('admin.profile.show') }}" class="sm:hidden rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold {{ request()->routeIs('admin.profile.*') ? 'border-brand-200 bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50' }}">
+                                Profile
+                            </a>
+                        @endif
+
+                        @if (Auth::user()->isStudent())
+                            <a href="{{ route('student.profile.show') }}" class="sm:hidden rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold {{ request()->routeIs('student.profile.*') ? 'border-brand-200 bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50' }}">
+                                Profile
+                            </a>
+                        @endif
+
+                        @if (Auth::user()->isChiefExaminer())
+                            <a href="{{ route('chief-examiner.profile.show') }}" class="sm:hidden rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold {{ request()->routeIs('chief-examiner.profile.*') ? 'border-brand-200 bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50' }}">
+                                Profile
+                            </a>
+                        @endif
 
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
