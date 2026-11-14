@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -135,7 +136,23 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $credentials['email'] = Str::lower(trim($credentials['email']));
         $credentials['is_active'] = true;
+
+        $throttleKey = Str::transliterate($credentials['email'].'|'.$request->ip());
+        $attemptKey = 'staff-login-attempts:'.$throttleKey;
+        $lockoutKey = 'staff-login-lockout:'.$throttleKey;
+
+        if (Cache::has($lockoutKey)) {
+            $secondsRemaining = Cache::get($lockoutKey) - now()->timestamp;
+            $minutesRemaining = max(1, (int) ceil($secondsRemaining / 60));
+
+            return back()
+                ->withInput($request->only('email', 'remember'))
+                ->withErrors([
+                    'email' => "Too many failed sign-in attempts. Please try again in {$minutesRemaining} minute(s).",
+                ]);
+        }
 
         $remember = $request->boolean('remember');
 
@@ -144,6 +161,8 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user->isAdmin() || $user->isChiefExaminer()) {
+                Cache::forget($attemptKey);
+                Cache::forget($lockoutKey);
                 $request->session()->regenerate();
 
                 $dashboard = $user->isAdmin()
@@ -158,6 +177,21 @@ class AuthController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
+
+        $failedAttempts = (int) Cache::get($attemptKey, 0) + 1;
+
+        if ($failedAttempts >= 5) {
+            Cache::forget($attemptKey);
+            Cache::put($lockoutKey, now()->addMinutes(10)->timestamp, now()->addMinutes(10));
+
+            return back()
+                ->withInput($request->only('email', 'remember'))
+                ->withErrors([
+                    'email' => 'Too many failed sign-in attempts. Please try again in 10 minutes.',
+                ]);
+        }
+
+        Cache::put($attemptKey, $failedAttempts, now()->addMinutes(10));
 
         return back()
             ->withInput($request->only('email', 'remember'))
