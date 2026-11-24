@@ -42,6 +42,18 @@
                 @endif
             </form>
 
+            <button type="button" 
+                    onclick="toggleLiveChat()" 
+                    class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 shadow-sm transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-brand-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>Student Live Chat</span>
+                <span id="dash-chat-badge" class="hidden px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white shadow-xs">
+                    0
+                </span>
+            </button>
+
             <a href="{{ route('chief-examiner.broadcasts.index') }}" 
                class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 shadow-sm transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-brand-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,6 +208,14 @@
                                     <div class="font-bold text-slate-900">{{ $reg->user->full_name }}</div>
                                     <div class="text-xs text-slate-500 font-mono">Index: {{ $reg->user->student_id_number ?? 'N/A' }}</div>
                                     <div class="text-[11px] text-slate-400">{{ $reg->user->email }}</div>
+                                    <button type="button" 
+                                            onclick="openLiveChatWith({{ $reg->user->id }}, '{{ addslashes($reg->user->full_name) }}', 'Student • {{ $reg->user->student_id_number ?? 'N/A' }}')"
+                                            class="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 transition">
+                                        <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        <span>Chat Student</span>
+                                    </button>
                                 </td>
                                 <td class="py-4 px-4">
                                     <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-1">

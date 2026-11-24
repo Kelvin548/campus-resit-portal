@@ -35,6 +35,14 @@
                     Applications Currently Closed
                 </span>
             @endif
+            <button type="button" 
+                    onclick="toggleLiveChat()" 
+                    class="px-4 py-2.5 rounded-xl bg-brand-800/80 hover:bg-brand-800 text-white font-medium text-xs border border-brand-500 transition flex items-center gap-1.5 shadow-xs">
+                <svg class="w-4 h-4 text-brand-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>Chat Chief Examiner</span>
+            </button>
             <a href="{{ route('student.timetable') }}" 
                class="px-4 py-2.5 rounded-xl bg-brand-800/60 hover:bg-brand-800 text-white font-medium text-xs border border-brand-600 transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -487,6 +495,114 @@
         </div>
     </div>
     @endif
+
+    <!-- STUDENT PORTAL HELP & USER GUIDE (Explains how the site works) -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-brand-50 border border-brand-200 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">
+                    <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-1">
+                        <span>Student Help Center</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900">How This Resit &amp; Supplementary Portal Works</h2>
+                    <p class="text-xs text-slate-500">Step-by-step guidance on applications, payments, timetables, and academic policies.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="button" 
+                    onclick="toggleLiveChat()" 
+                    class="px-4 py-2.5 rounded-xl bg-brand-800/80 hover:bg-brand-800 text-white font-medium text-xs border border-brand-500 transition flex items-center gap-1.5 shadow-xs">
+                <svg class="w-4 h-4 text-brand-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>Chat Chief Examiner</span>
+            </button>
+            <a href="{{ route('student.timetable') }}" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                    View Timetables
+                </a>
+                <a href="{{ route('student.announcements') }}" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 transition">
+                    Notice Board
+                </a>
+            </div>
+        </div>
+
+        <!-- 4 Core Pillars of How the Site Works -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Resit Registration -->
+            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-2.5 flex flex-col justify-between">
+                <div>
+                    <div class="w-8 h-8 rounded-xl bg-brand-100 text-brand-800 font-black text-xs flex items-center justify-center mb-2">1</div>
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Resit Course Registration</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                        If you have an incomplete or failed paper from a previous semester, click <strong>Register Resit Course</strong>. Use the instant search engine to find and fetch your course by code (e.g. <code class="text-brand-700 font-mono">ICT131</code>) or title.
+                    </p>
+                </div>
+                <div class="pt-2 text-[11px] text-slate-500 border-t border-slate-200/60 font-medium">
+                    Standard fee applies per credit/paper.
+                </div>
+            </div>
+
+            <!-- Card 2: Supplementary Waivers -->
+            <div class="p-5 rounded-2xl bg-blue-50/60 border border-blue-200/80 space-y-2.5 flex flex-col justify-between">
+                <div>
+                    <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 font-black text-xs flex items-center justify-center mb-2">2</div>
+                    <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider">Supplementary Requests</h3>
+                    <p class="text-xs text-blue-800/80 leading-relaxed mt-1">
+                        If you missed scheduled exams due to medical reasons or extenuating personal emergencies, submit a <strong>Supplementary Request</strong> with your medical report and formal justification letter.
+                    </p>
+                </div>
+                <div class="pt-2 text-[11px] text-blue-700 border-t border-blue-200/60 font-semibold">
+                    100% Fee Waived upon Chief Examiner approval.
+                </div>
+            </div>
+
+            <!-- Card 3: Mobile Money & Instant Approval -->
+            <div class="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2.5 flex flex-col justify-between">
+                <div>
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-black text-xs flex items-center justify-center mb-2">3</div>
+                    <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider">Instant MoMo Payment</h3>
+                    <p class="text-xs text-emerald-800/80 leading-relaxed mt-1">
+                        Resit applications trigger an instant Mobile Money authorization prompt on your phone (MTN MoMo, Telecel Cash, or AT Money). Once approved, your paper is immediately approved with an official printable receipt.
+                    </p>
+                </div>
+                <div class="pt-2 text-[11px] text-emerald-700 border-t border-emerald-200/60 font-semibold">
+                    Automated real-time approval upon USSD pin entry.
+                </div>
+            </div>
+
+            <!-- Card 4: Master Timetables & Exam Slips -->
+            <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2.5 flex flex-col justify-between">
+                <div>
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-black text-xs flex items-center justify-center mb-2">4</div>
+                    <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider">Timetables &amp; Exam Slips</h3>
+                    <p class="text-xs text-amber-800/80 leading-relaxed mt-1">
+                        Once the Chief Examination Officer publishes the schedule, your specific examination dates, times, and venues appear on your dashboard and master timetable. Download and print your official admission slip before sitting.
+                    </p>
+                </div>
+                <div class="pt-2 text-[11px] text-amber-700 border-t border-amber-200/60 font-semibold">
+                    Official admission slip required at venue.
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Support Contact Footer -->
+        <div class="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2 text-slate-700">
+                <span class="font-bold text-slate-900">Need Academic Support?</span>
+                <span>Contact Academic Affairs Examination Helpdesk:</span>
+                <span class="font-mono text-brand-700 font-semibold">examinations@usted.edu.gh</span>
+            </div>
+            <div class="text-slate-500 text-[11px]">
+                Support desk open weekdays 8:00 AM – 5:00 PM GMT
+            </div>
+        </div>
+    </div>
 
 </div>
 

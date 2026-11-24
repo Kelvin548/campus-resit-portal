@@ -25,6 +25,16 @@ class User extends Authenticatable
         'role',
         'student_id_number',
         'phone_number',
+        'is_active',
+    ];
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
     ];
 
     /**
@@ -105,6 +115,30 @@ class User extends Authenticatable
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'user_id');
+    }
+
+    /**
+     * Chat messages sent by this user.
+     */
+    public function sentChatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    /**
+     * Chat messages received by this user.
+     */
+    public function receivedChatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'receiver_id');
+    }
+
+    /**
+     * Unread chat messages count for this user.
+     */
+    public function unreadChatMessagesCount(): int
+    {
+        return $this->receivedChatMessages()->where('is_read', false)->count();
     }
 
     /**

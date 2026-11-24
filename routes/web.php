@@ -9,6 +9,7 @@ use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\SupplementaryCycleController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\AdminAccountController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
@@ -110,6 +111,17 @@ Route::middleware('guest')->group(function () {
 Route::post('/paystack/webhook', [PaymentController::class, 'handleWebhook'])->name('paystack.webhook');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Live Chat between Students & Chief Examination Officer
+Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/init', [ChatController::class, 'initChat'])->name('init');
+    Route::get('/conversations', [ChatController::class, 'getConversations'])->name('conversations');
+    Route::get('/messages', [ChatController::class, 'getMessages'])->name('messages');
+    Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+    Route::post('/mark-read', [ChatController::class, 'markAsRead'])->name('mark-read');
+    Route::get('/unread-count', [ChatController::class, 'getUnreadCount'])->name('unread-count');
+    Route::get('/search-students', [ChatController::class, 'searchStudents'])->name('search-students');
+});
 
 // Member 2: Student Registration & Student Portal Routes
 Route::middleware(['auth', 'role:student', 'student.cycle'])->prefix('student')->name('student.')->group(function () {
