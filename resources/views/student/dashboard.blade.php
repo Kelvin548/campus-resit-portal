@@ -289,14 +289,16 @@
                             <td class="py-4 px-6 text-right whitespace-nowrap">
                                 @if($reg->status === 'pending_payment')
                                     @if($studentRegistrationOpen)
-                                        <button type="button" 
-                                                onclick="openPayModal('{{ $reg->id }}', '{{ $reg->course->course_code }}', '{{ number_format($reg->course->registration_fee, 2) }}')"
-                                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-xs transition">
-                                            <span>Pay with MoMo</span>
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                            </svg>
-                                        </button>
+                                        <form method="POST" action="{{ route('student.pay', $reg) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" 
+                                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-xs transition cursor-pointer">
+                                                <span>Pay with MoMo</span>
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
                                     @else
                                         <span class="text-xs text-slate-400 italic">Applications closed</span>
                                     @endif
@@ -488,69 +490,4 @@
 
 </div>
 
-@if($studentRegistrationOpen)
-<!-- Mobile Money Payment Modal -->
-<div id="payModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-200">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-                <h3 class="text-base font-bold text-slate-900">Mobile Money Resit Payment</h3>
-                <p class="text-xs text-slate-500">Official USTED MoMo Payment Gateway</p>
-            </div>
-            <button type="button" onclick="closePayModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
-        </div>
-
-        <form id="paymentForm" method="POST" action="" class="space-y-4 mt-4">
-            @csrf
-            <div>
-                <div class="text-xs text-slate-500">Course for Resit:</div>
-                <div id="modalCourseCode" class="text-base font-bold text-slate-900 font-mono"></div>
-            </div>
-
-            <div class="p-3.5 rounded-2xl bg-brand-50 border border-brand-200 flex justify-between items-center">
-                <span class="text-xs font-semibold text-brand-800">Amount Due:</span>
-                <span class="text-xl font-extrabold text-brand-900">GHS <span id="modalFee">0.00</span></span>
-            </div>
-
-            <div>
-                <label for="network" class="block text-xs font-bold text-slate-700 uppercase mb-1">Select Network</label>
-                <select name="network" id="network" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-brand-600">
-                    <option value="MTN">MTN Mobile Money</option>
-                    <option value="Telecel">Telecel Cash (Vodafone)</option>
-                    <option value="AT">AT Money (AirtelTigo)</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="phone_number" class="block text-xs font-bold text-slate-700 uppercase mb-1">Mobile Money Number</label>
-                <input type="tel" name="phone_number" id="phone_number" value="{{ $student->phone_number ?? '0244123456' }}" required
-                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-brand-600">
-                <p class="text-[11px] text-slate-400 mt-1">Prompt will be routed to your mobile device.</p>
-            </div>
-
-            <div class="pt-2 flex items-center justify-end gap-3">
-                <button type="button" onclick="closePayModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
-                    Cancel
-                </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
-                    Approve &amp; Pay Now
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    function openPayModal(registrationId, courseCode, fee) {
-        document.getElementById('modalCourseCode').innerText = courseCode;
-        document.getElementById('modalFee').innerText = fee;
-        document.getElementById('paymentForm').action = '/student/registrations/' + registrationId + '/pay';
-        document.getElementById('payModal').classList.remove('hidden');
-    }
-
-    function closePayModal() {
-        document.getElementById('payModal').classList.add('hidden');
-    }
-</script>
-@endif
 @endsection

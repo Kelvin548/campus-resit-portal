@@ -89,15 +89,18 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'phone_number' => ['required', 'string', 'regex:/^[0-9+\s\-]{10,15}$/'],
-            'network' => ['required', 'string', 'in:MTN,Telecel,AT'],
+            'phone_number' => ['nullable', 'string', 'regex:/^[0-9+\s\-]{10,15}$/'],
+            'network' => ['nullable', 'string', 'in:MTN,Telecel,AT'],
         ]);
 
         $course = $registration->course;
         $amount = $course->registration_fee;
 
+        $phoneNumber = $validated['phone_number'] ?? $user->phone_number ?? '0551234987';
+        $networkName = $validated['network'] ?? 'MTN';
+
         // Clean up and format phone number for Ghana MoMo
-        $phone = preg_replace('/[^0-9]/', '', $validated['phone_number']);
+        $phone = preg_replace('/[^0-9]/', '', $phoneNumber);
         if (str_starts_with($phone, '233')) {
             $phone = '0' . substr($phone, 3);
         }
@@ -108,7 +111,7 @@ class PaymentController extends Controller
             'Telecel' => 'vod', // Vodafone / Telecel Ghana
             'AT' => 'tgo',     // AirtelTigo / AT Ghana
         ];
-        $provider = $providerMap[$validated['network']] ?? 'mtn';
+        $provider = $providerMap[$networkName] ?? 'mtn';
 
         // Unique reference for Paystack
         $txRef = 'RESIT-MOMO-' . date('Ymd') . '-' . strtoupper(Str::random(8));
@@ -124,8 +127,8 @@ class PaymentController extends Controller
                 'transaction_reference' => $txRef,
                 'amount' => $amount,
                 'payment_method' => 'momo',
-                'phone_number' => $validated['phone_number'],
-                'network' => $validated['network'],
+                'phone_number' => $phoneNumber,
+                'network' => $networkName,
                 'status' => Payment::STATUS_SUCCESSFUL,
                 'paid_at' => now(),
                 'gateway_reference' => 'TEST-' . $txRef,
@@ -148,8 +151,8 @@ class PaymentController extends Controller
             'transaction_reference' => $txRef,
             'amount' => $amount,
             'payment_method' => 'momo',
-            'phone_number' => $validated['phone_number'],
-            'network' => $validated['network'],
+            'phone_number' => $phoneNumber,
+            'network' => $networkName,
             'status' => Payment::STATUS_PENDING,
             'gateway_reference' => $txRef,
             'gateway_response' => [
@@ -161,8 +164,7 @@ class PaymentController extends Controller
 
         // Call Paystack Transaction Initialize API
         // This generates a secure Paystack checkout session that connects to Ghana telecom MoMo
-        // switches (MTN, Telecel, AT) and immediately pushes the real USSD authorization prompt
-        // directly to the student's phone to enter their PIN.
+        // switches (MTN, Telecel, AT) and directly opens the official Paystack checkout interface.
         $callbackUrl = route('student.payments.callback');
 
         $paystackRes = $this->callPaystack('transaction/initialize', [
@@ -176,8 +178,7 @@ class PaymentController extends Controller
                 'registration_id' => $registration->id,
                 'course_code' => $course->course_code,
                 'student_id' => $user->id,
-                'phone_number' => $validated['phone_number'],
-                'network' => $validated['network'],
+                'student_name' => $user->full_name,
             ],
         ]);
 
@@ -257,9 +258,37 @@ class PaymentController extends Controller
             $data = $verifyRes['data'] ?? [];
 
             if (($data['status'] ?? '') === 'success') {
+                $authorization = $data['authorization'] ?? [];
+                $customer = $data['customer'] ?? [];
+
+                // Extract real phone number used during payment
+                $paidPhone = $authorization['phone']
+                    ?? $authorization['mobile_money_number']
+                    ?? $customer['phone']
+                    ?? $data['phone']
+                    ?? $payment->phone_number;
+
+                // Extract real telecom network used (e.g., MTN, Vodafone/Telecel, AirtelTigo/AT)
+                $networkUsed = $payment->network;
+                $bankOrBrand = $authorization['bank'] ?? $authorization['brand'] ?? $data['channel'] ?? '';
+                if ($bankOrBrand) {
+                    $upper = strtoupper($bankOrBrand);
+                    if (str_contains($upper, 'MTN')) {
+                        $networkUsed = 'MTN';
+                    } elseif (str_contains($upper, 'VOD') || str_contains($upper, 'TELECEL')) {
+                        $networkUsed = 'Telecel';
+                    } elseif (str_contains($upper, 'AIRTEL') || str_contains($upper, 'TIGO') || str_contains($upper, 'AT')) {
+                        $networkUsed = 'AT';
+                    } else {
+                        $networkUsed = $bankOrBrand;
+                    }
+                }
+
                 $payment->update([
                     'status' => Payment::STATUS_SUCCESSFUL,
                     'paid_at' => now(),
+                    'phone_number' => $paidPhone,
+                    'network' => $networkUsed,
                     'gateway_response' => $data,
                 ]);
 
@@ -492,9 +521,35 @@ class PaymentController extends Controller
                         ->first();
 
                     if ($payment && ! $payment->isSuccessful()) {
+                        $authorization = $data['authorization'] ?? [];
+                        $customer = $data['customer'] ?? [];
+
+                        $paidPhone = $authorization['phone']
+                            ?? $authorization['mobile_money_number']
+                            ?? $customer['phone']
+                            ?? $data['phone']
+                            ?? $payment->phone_number;
+
+                        $networkUsed = $payment->network;
+                        $bankOrBrand = $authorization['bank'] ?? $authorization['brand'] ?? $data['channel'] ?? '';
+                        if ($bankOrBrand) {
+                            $upper = strtoupper($bankOrBrand);
+                            if (str_contains($upper, 'MTN')) {
+                                $networkUsed = 'MTN';
+                            } elseif (str_contains($upper, 'VOD') || str_contains($upper, 'TELECEL')) {
+                                $networkUsed = 'Telecel';
+                            } elseif (str_contains($upper, 'AIRTEL') || str_contains($upper, 'TIGO') || str_contains($upper, 'AT')) {
+                                $networkUsed = 'AT';
+                            } else {
+                                $networkUsed = $bankOrBrand;
+                            }
+                        }
+
                         $payment->update([
                             'status' => Payment::STATUS_SUCCESSFUL,
                             'paid_at' => now(),
+                            'phone_number' => $paidPhone,
+                            'network' => $networkUsed,
                             'gateway_response' => $data,
                         ]);
 
